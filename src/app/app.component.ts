@@ -4,8 +4,11 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  template: `
+    <div>Test</div>
+    <router-outlet />
+  `,
+  styles: ''
 })
 export class AppComponent {
   title = 'notes-angular';

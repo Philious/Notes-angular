@@ -1,0 +1,5 @@
+@mixin tabletUp {
+  @media (min-width: 40rem) {
+    @content;
+  }
+}
