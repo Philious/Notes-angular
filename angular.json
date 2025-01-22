@@ -30,10 +30,16 @@
               }
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["src/assets/styles/styles"]
+              "includePaths": ["src/assets/styles"]
             },
             "styles": ["src/assets/styles/index.scss"],
-            "scripts": []
+            "scripts": [],
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "hidden": true,
+              "vendor": true
+            }
           },
           "configurations": {
             "production": {
@@ -86,7 +92,7 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": ["src/assets/index.scss"],
             "scripts": []
           }
         }

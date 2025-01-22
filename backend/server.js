@@ -7,7 +7,7 @@ const port = 3000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://localhost:4200",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -51,12 +51,14 @@ app.get("/users/login/:email/:password", (req, res) => {
   if (userIndex >= 0) {
     const token = uuid.v4();
     users[userIndex].token = token;
-
+    /*
     res.cookie("note-cookie", token, {
       domain: "localhost", // Correct domain
       expires: new Date(Date.now() + 900000),
       maxAge: 1800000,
     });
+    */
+    console.log("Pass token", token);
     res.status(200).json(token);
   } else {
     res.status(401).json({ error: "Invalid credentials" });
@@ -229,7 +231,7 @@ const users = [
   {
     uuid: "89503dc5-9517-48a2-833f-6bc7c0d32f1b",
     email: "conny@carneval.com",
-    password: "1234†",
+    password: "12345†",
     createdAt: new Date().toISOString(),
     token: null,
   },

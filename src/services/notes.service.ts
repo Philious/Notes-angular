@@ -1,51 +1,43 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { Note, NoteProps } from '../types/types';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, map, retry } from 'rxjs/operators';
+import { Note, NoteProps } from '../helpers/types';
 import { UserService } from './user.service';
+import { sortNotes } from '../helpers/utils';
+import { Router } from '@angular/router';
 
-const sortNotes = (notes: Note[]): Note[] => {
-  return notes.sort((a, b) => {
-    const date = new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf()
-    if (date !== 0) return date;
-    return a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1
-  });
-}
+
 
 @Injectable({
   providedIn: 'root',
 })
-
 export class NoteService {
   private baseUrl = 'http://localhost:3000';
-  private token: string | null = null;
-  private observedNotes = new BehaviorSubject<Note[]>([]);
-  public notes$ = this.observedNotes.asObservable().pipe(
-    map(notes => sortNotes(notes))
-  );
-  private activeNote = new BehaviorSubject<Note | null>(null);
-  public activeNote$ = this.activeNote.asObservable();
   private headers = new HttpHeaders({
     "Content-Type": "application/json",
     "Accept": "application/json"
   });
+  private router;
+  private token: string | null = null;
+  private observedNotes = new BehaviorSubject<Note[]>([]);
+  public notes$: Observable<Note[]> = this.observedNotes.asObservable().pipe(
+    map(notes => sortNotes(notes))
+  );
+  private observedActiveNote = new BehaviorSubject<Note | null>(null);
+  public activeNote$ = this.observedActiveNote.asObservable();
 
-  constructor(private http: HttpClient, private userService: UserService) {
-    this.userService.token$.subscribe({
-      next: (value) => {
-        console.log('ServiceB received value from ServiceA:', value);
-        this.token = value
-      },
-      error: (err) => console.error('Error receiving value:', err),
-    });
+  constructor(private http: HttpClient, private userService: UserService, router: Router) {
+    this.router = router;
+    this.userService.token$.subscribe(token => {
+      this.token = token ?? null;
+      if (token) {
+        this.getNotes();
+        this.router.navigate(["notes"])
+      }
+      else { this.observedNotes.next([]); }
+    })
   }
-
-  /**
-   * @param token Authorization token
-   * @returns void
-   */
-  setToken(token?: string): void { this.token = token ?? null; }
 
   /**
    * @returns Observable<Note[]>
@@ -53,13 +45,13 @@ export class NoteService {
   getNotes(): void {
     this.http.get<Note[]>(`${this.baseUrl}/notes/${this.token}`, { headers: this.headers }).pipe(
       retry(5),
-      map(body => { console.log(body); return (body ?? []) as Note[] }),
+      map(body => (body ?? []) as Note[]),
       catchError((error) => {
         console.error('Error fetching notes:', error);
-        throw error; // Re-throw the error after logging it
+        throw error;
       })
     ).subscribe(notes => {
-      this.observedNotes.next(notes); // Update the BehaviorSubject
+      this.observedNotes.next(notes);
     });
 
   }
@@ -74,6 +66,7 @@ export class NoteService {
     console.log('Add note');
 
     return this.http.post<NoteProps>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
+      retry(5),
       catchError((error) => {
         console.error('Error fetching notes:', error);
         throw error; // Re-throw the error after logging it
@@ -90,6 +83,7 @@ export class NoteService {
     console.log('Update note');
 
     return this.http.post<Partial<NoteProps>>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
+      retry(5),
       catchError((error) => {
         console.error('Error fetching notes:', error);
         throw error; // Re-throw the error after logging it
@@ -113,7 +107,3 @@ export class NoteService {
     );
   }
 }
-function retry(arg0: number): import("rxjs").OperatorFunction<Note[], unknown> {
-  throw new Error('Function not implemented.');
-}
-

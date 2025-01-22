@@ -1,3 +1,6 @@
+import { FormControl } from "@angular/forms";
+import { InputState } from "./enum";
+
 export type Note = {
   id: string;
   title: string;

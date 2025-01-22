@@ -1,16 +1,25 @@
-@use 'scss.variables' as *;
+@use 'css.variables' as *;
+@use 'easing.mixins' as e;
+@forward 'media-size.mixins';
+@use 'component.mixins' as c;
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  font-size: $org-fnt-size;
+  font-size: var(--app-font-size);
   color-scheme: dark;
-  color: $clr;
-  background-color: $bg-clr;
+  color: var(--clr);
+  background-color: var(--bg-clr);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @include e.easing;
+  @include c.components;
+}
+
+body {
+  margin: 0;
 }
