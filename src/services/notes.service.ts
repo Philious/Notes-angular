@@ -20,29 +20,54 @@ export class NoteService {
   });
   private router;
   private token: string | null = null;
+
   private observedNotes = new BehaviorSubject<Note[]>([]);
   public notes$: Observable<Note[]> = this.observedNotes.asObservable().pipe(
     map(notes => sortNotes(notes))
   );
+
   private observedActiveNote = new BehaviorSubject<Note | null>(null);
   public activeNote$ = this.observedActiveNote.asObservable();
 
   constructor(private http: HttpClient, private userService: UserService, router: Router) {
     this.router = router;
     this.userService.token$.subscribe(token => {
-      this.token = token ?? null;
+      console.log('token update', token);
+      this.token = token;
       if (token) {
         this.getNotes();
         this.router.navigate(["notes"])
       }
-      else { this.observedNotes.next([]); }
+      else {
+        this.router.navigate(["login"])
+        this.observedNotes.next([]);
+      }
     })
   }
+
+  setActiveNote(note: Note | null): void {
+    this.observedActiveNote.next(note);
+  }
+
+  newNote(): Note {
+    const date = new Date().toDateString();
+    return {
+      id: '',
+      title: '',
+      content: '',
+      catalog: '',
+      tags: [],
+      createdAt: date,
+      updatedAt: date
+    }
+  }
+
 
   /**
    * @returns Observable<Note[]>
    */
   getNotes(): void {
+    console.log('get notes');
     this.http.get<Note[]>(`${this.baseUrl}/notes/${this.token}`, { headers: this.headers }).pipe(
       retry(5),
       map(body => (body ?? []) as Note[]),
@@ -51,6 +76,7 @@ export class NoteService {
         throw error;
       })
     ).subscribe(notes => {
+      console.log('notes', notes);
       this.observedNotes.next(notes);
     });
 
@@ -71,7 +97,7 @@ export class NoteService {
         console.error('Error fetching notes:', error);
         throw error; // Re-throw the error after logging it
       })
-    );
+    ).subscribe(response => console.log(response));
   }
 
   /**
@@ -82,13 +108,13 @@ export class NoteService {
   updateNote(note: Partial<NoteProps> & { id: string }) {
     console.log('Update note');
 
-    return this.http.post<Partial<NoteProps>>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
+    return this.http.put<Partial<NoteProps>>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
       retry(5),
       catchError((error) => {
         console.error('Error fetching notes:', error);
         throw error; // Re-throw the error after logging it
       })
-    );
+    ).subscribe(notes => this.observedNotes.next(notes as Note[]));
   }
 
   /**

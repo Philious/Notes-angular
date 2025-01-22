@@ -11,7 +11,7 @@ import { NoteService } from '../services/notes.service';
   `,
   styles: ''
 })
+
 export class AppComponent {
   constructor(userService: UserService, noteService: NoteService) { }
-  title = 'notes-angular';
 }

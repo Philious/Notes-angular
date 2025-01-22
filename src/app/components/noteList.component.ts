@@ -4,7 +4,6 @@ import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
 import { ListItem } from "./noteListItem";
 import { NoteService } from "../../services/notes.service";
 import { Note } from "../../helpers/types";
-import { map } from "rxjs/operators";
 
 @Component({
   selector: 'note-list',
@@ -15,11 +14,12 @@ import { map } from "rxjs/operators";
       <div class="list-options">
         <icon-button
           [icon]="IconEnum.LetterSize"
-          [buttonStyle]="ButtonStyleEnum.Transparent"
+          [buttonStyle]="ButtonStyleEnum.Border"
         />
         <icon-button
           [icon]="IconEnum.Add"
-          [buttonStyle]="ButtonStyleEnum.Transparent"
+          [buttonStyle]="ButtonStyleEnum.Border"
+          (onClick)="newNote()"
         />
       </div>
     </div>
@@ -28,7 +28,7 @@ import { map } from "rxjs/operators";
         @for (note of notes; track note.id) {
           @if (note.updatedAt) { 
           <li class="list-item-container">
-            <list-item [note]="note" (onClick)="openNote($event)" />
+            <list-item [note]="note" (onClick)="setNote(note)" />
           </li>
           }
         }
@@ -74,6 +74,7 @@ import { map } from "rxjs/operators";
     }
     .list-options {
       display: flex;
+      gap: .5rem;
     }
     .to-notes-btn {
       gap: .125rem;
@@ -109,11 +110,18 @@ export class NoteListComponent {
   IconEnum = IconEnum;
   ButtonStyleEnum = ButtonStyleEnum;
   notes: Note[] = [];
+  showActiveNote = false;
+
+  setNote: (note: Note) => void;
+  newNote: () => void;
 
   constructor(noteService: NoteService) {
+    this.setNote = (note: Note) => noteService.setActiveNote(note);
+    this.newNote = noteService.newNote;
+    noteService.activeNote$.subscribe(active => this.showActiveNote = !!active);
     noteService.notes$.subscribe(notes => {
       this.notes = notes
     })
   }
-  openNote = (id: string) => { console.log(id) }
+
 }

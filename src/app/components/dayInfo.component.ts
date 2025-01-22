@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { IconButtonComponent } from "./action/iconButton.component";
 import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
+import { UserService } from "../../services/user.service";
 
 @Component({
   selector: 'day-info',
@@ -70,8 +71,12 @@ import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
 export class DayInfoComponent {
   IconEnum = IconEnum;
   ButtonStyleEnum = ButtonStyleEnum;
+  userService: UserService;
+  constructor(userService: UserService) {
+    this.userService = userService;
+  }
 
-  onLogout = () => { }
+  onLogout = () => { this.userService.logout() }
   greeting = 'Hi'
   date = new Date().toLocaleDateString('en-us', { weekday: "long", year: "numeric", month: "short", day: "numeric" });
 }

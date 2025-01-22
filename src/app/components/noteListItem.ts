@@ -7,7 +7,7 @@ import { Note } from "../../helpers/types";
   template: `
     <button
       class="list-item"
-      (click)="selectNote(note.id)"
+      (click)="selectNote()"
       base-input
     >
       <div class="list-item-header">
@@ -36,6 +36,10 @@ import { Note } from "../../helpers/types";
       width: 100%;
       height: min-content;
       position: relative;
+      transition: background-color .15s;
+      &:hover {
+        background-color: hsla(0, 0%, 100%, .1);
+      }
     }
     .list-item-header {
       font-size: var(--list-item-font-size);
@@ -75,16 +79,16 @@ import { Note } from "../../helpers/types";
 export class ListItem implements OnInit {
   updatedAt: string = ''
   @Input() note!: Note;
-  @Output() onClick = new EventEmitter<string>();
+  @Output() onClick = new EventEmitter<Note>();
 
   ngOnInit(): void {
     this.updatedAt = new Date(this.note.updatedAt).toLocaleDateString(
-      'en-us',
+      'sv-se',
       { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
     )
   }
 
-  selectNote = (id: string) => {
-    this.onClick.emit(id);
+  selectNote = () => {
+    this.onClick.emit(this.note);
   }
 };

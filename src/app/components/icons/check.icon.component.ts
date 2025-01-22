@@ -8,7 +8,7 @@ import { Component } from "@angular/core";
       class="check icn"
       stroke-linecap="round"
     >
-      <path d="M17.6066 8L10.5355 15.0711L7 11.5355" />
+      <path d="M17.6 8L10.5 15L7 11L6 13L10.5 18L18.6 10Z" />
     </svg>
   `
 })

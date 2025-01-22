@@ -16,7 +16,7 @@ import { UserService } from "../../../services/user.service";
     
   `,
   styles: `
-    .icn { fill: var(--clr) }
+    .icn { fill: var(--n-500) }
     .bg {
       width: 2rem;
       height: 2rem;

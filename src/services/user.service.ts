@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { LoginDetails } from '../helpers/types';
+import { deleteCookie, getCookie, setCookie } from '../helpers/utils';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +20,22 @@ export class UserService {
 
   public loading = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, router: Router) {
+    const cookie = getCookie('NOTE_COOKIE') ?? null;
+
+    if (cookie) {
+      const check$ = this.checkLoginStatus(cookie);
+      check$.subscribe(state => {
+        console.log('user blorg: ', state);
+        if (state) {
+          console.log(cookie);
+          this.token.next(cookie)
+        } else {
+          // router.navigate(["login"])
+        }
+      })
+    }
+  }
 
   /**
    * @param email string
@@ -49,6 +66,7 @@ export class UserService {
       })
     ).subscribe(token => {
       console.log('login function: ', token);
+      setCookie('NOTE_COOKIE', token, 1);
       this.token.next(token);
     });
   }
@@ -58,14 +76,18 @@ export class UserService {
    */
   logout() {
     console.log('logout');
-    if (!this.token) return console.log('User already logged out');
+    deleteCookie('NOTE_COOKIE');
+    // if (!this.token) return console.log('User already logged out');
 
-    return this.http.delete(`${this.baseUrl}/users/logout/${this.token}`, { headers: this.headers }).pipe(
+    console.log(`${this.baseUrl}/users/logout/${this.token.value}`, this.token.value);
+    return this.http.delete(`${this.baseUrl}/users/logout/${this.token.value}`, { headers: this.headers }).pipe(
       catchError((error) => {
         console.error('Error fetching notes:', error);
         throw error;
       })
-    ).subscribe(_ => this.token.next(null));
+    ).subscribe(_ => {
+      this.token.next(null)
+    });
   }
 
   /**

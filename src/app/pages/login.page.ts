@@ -143,12 +143,10 @@ export class LoginPage {
         this.userService.updatePassword(email)
       }
     } else {
-      const t = this.profileForm.controls.email.errors;
       this.emailFieldState = this.profileForm.controls.email.valid ? InputState.Default : InputState.Error;
       this.emailFieldHelpText = this.helpText(this.profileForm.controls.email.errors);
       this.passwordFieldState = this.profileForm.controls.password.valid ? InputState.Default : InputState.Error;
       this.passwordFieldHelpText = this.helpText(this.profileForm.controls.password.errors);
-      console.warn('Login error', this.profileForm, this.passwordFieldHelpText, Object.keys(this.profileForm.controls.password.errors ?? [])?.[0]);
     }
   }
 }
