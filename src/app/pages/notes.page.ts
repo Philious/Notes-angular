@@ -1,27 +1,21 @@
 import { Component } from '@angular/core';
 import { DayInfoComponent } from '../components/dayInfo.component';
 import { NoteListComponent } from '../components/noteList.component';
-import { NoteComponent } from '../components/note.component';
+import { NoteComponent } from '../components/modals/note.component';
 import { NoteService } from '../../services/notes.service';
-import { NgClass } from '@angular/common';
-
+import { fadeUp } from '../../helpers/utils';
 
 @Component({
   selector: 'notes',
-  imports: [DayInfoComponent, NoteListComponent, NoteComponent],
+  imports: [DayInfoComponent, NoteListComponent, NoteComponent,],
   template: `
-
-      <day-info />
-      <note-list />
-      <note class="note" [class.active]="activeNote"/>
+    <day-info></day-info>
+    <note-list></note-list>
+    <note [@inOut]="activeNote ? 'open' : 'closed'" class="note" [class.active]="activeNote"></note>
   `,
-  styles: `
+  styles: [
+    `
     @use 'media-size.mixins' as media;
-    @keyframes toggleVisible {
-      0% { display: none; }
-      1% { display: grid; }
-      100% { display: grid; }
-    }
     :host {
       display: flex;
       flex-direction: column;
@@ -33,14 +27,17 @@ import { NgClass } from '@angular/common';
         grid-template-rows: var(--day-area-height) calc(100vh - var(--day-area-height));
       }
     }
-    .note:not(.active) {
-      display: none;
-    }
-  `
+    `
+  ],
+  animations: fadeUp
 })
 export class NotesPage {
   activeNote = false;
-  constructor(noteService: NoteService) {
-    noteService.activeNote$.subscribe(active => this.activeNote = !!active)
+
+  constructor(private noteService: NoteService) {
+    this.noteService.activeNote$.subscribe((active) => {
+      this.activeNote = !!active;
+    });
   }
+
 }

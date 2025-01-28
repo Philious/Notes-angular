@@ -1,60 +1,66 @@
-import { Component } from "@angular/core";
+import { Component, ElementRef, ViewChild } from "@angular/core";
 import { IconButtonComponent } from "./action/iconButton.component";
 import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
 import { ListItem } from "./noteListItem";
 import { NoteService } from "../../services/notes.service";
 import { Note } from "../../helpers/types";
+import { ContextMenuService } from "../../services/contextMenu.service";
+import { ActiveNoteService } from "../../services/activeNote.service";
 
 @Component({
   selector: 'note-list',
   imports: [IconButtonComponent, ListItem],
   template: `
-    <div class="list-header">
-      <label class="header">Notes</label>
-      <div class="list-options">
-        <icon-button
-          [icon]="IconEnum.LetterSize"
-          [buttonStyle]="ButtonStyleEnum.Border"
-        />
-        <icon-button
-          [icon]="IconEnum.Add"
-          [buttonStyle]="ButtonStyleEnum.Border"
-          (onClick)="newNote()"
-        />
-      </div>
-    </div>
+    
     @if (notes.length) { 
       <ul class="list">
         @for (note of notes; track note.id) {
           @if (note.updatedAt) { 
           <li class="list-item-container">
-            <list-item [note]="note" (onClick)="setNote(note)" />
+            <list-item [note]="note" (onClick)="activeNoteService.open(note)" />
           </li>
           }
         }
       </ul>
     }
+
+    <div class="list-header">
+      <label class="header">Notes</label>
+      <div class="list-options" >
+      <icon-button 
+        #letterSizeButton
+        [icon]="IconEnum.LetterSize"
+        [buttonStyle]="ButtonStyleEnum.Border"
+        (click)="letterSizeMenu()"
+      ></icon-button>
+        <icon-button
+          [icon]="IconEnum.Add"
+          [buttonStyle]="ButtonStyleEnum.Border"
+          (onClick)="activeNoteService.open()"
+        />
+      </div>
+    </div>
   `,
   styles: `
     @use 'media-size.mixins' as media;
     :host {
+      position: relative;
       grid-area: var(--list-area);
       max-width: var(--note-list-width);
       max-height: 100%;
       overflow-y: auto;
       box-shadow: 1px 0 0 var(--n-300);
       flex: 1;
-      display: contents;
+      display: flex;
       @include media.tabletUp {
-        display: grid;
         grid-template-rows: var(--toolbar-height) 1fr;
       }
     }
     .list-header {
       background-color: var(--black);
       box-sizing: border-box;
-      position: sticky;
-      top: var(--list-header-top);
+      position: absolute;
+      top: 0;
       align-items: center;
       display: flex;
       place-self: center start;
@@ -62,10 +68,9 @@ import { Note } from "../../helpers/types";
       padding: 0 .5rem 0 1rem;
       justify-content: space-between;
       width: 100%;
-      height: 3rem;
+      height: var(--list-header-height);
       box-sizing: border-box;
-      border-bottom: 1px solid var(--n-400);
-      z-index: 1;
+      border-bottom: 0.0625rem solid var(--n-400);
     }
     .header {
       text-transform: uppercase;
@@ -88,7 +93,7 @@ import { Note } from "../../helpers/types";
       overflow-y:auto;
       list-style: none;
       padding: 0 0 3rem 0;
-      margin: 0;
+      margin: 3rem 0 0 0;
       scroll-snap-type: y mandatory;
     }
     .list-item-container {
@@ -107,21 +112,32 @@ import { Note } from "../../helpers/types";
 })
 
 export class NoteListComponent {
+  @ViewChild('letterSizeButton', { static: false, read: ElementRef }) letterSizeBtn!: ElementRef;
+
   IconEnum = IconEnum;
   ButtonStyleEnum = ButtonStyleEnum;
+
   notes: Note[] = [];
   showActiveNote = false;
+  testclick = () => { console.log('click') };
+  updateAppFontSize = (size: number) => {
+    document.documentElement.style.setProperty("--app-font-size", `${size}px`);
+    this.menuService.close()
+  }
 
-  setNote: (note: Note) => void;
-  newNote: () => void;
+  letterSizeMenu(): void {
+    if (this.letterSizeBtn?.nativeElement) {
+      this.menuService.open([
+        { id: 'id1', label: 'Large', action: () => this.updateAppFontSize(22) },
+        { id: 'id2', label: 'Normal', action: () => this.updateAppFontSize(16) },
+        { id: 'id3', label: 'Small', action: () => this.updateAppFontSize(12) }
+      ], this.letterSizeBtn.nativeElement)
+    }
+  }
 
-  constructor(noteService: NoteService) {
-    this.setNote = (note: Note) => noteService.setActiveNote(note);
-    this.newNote = noteService.newNote;
+  constructor(noteService: NoteService, public activeNoteService: ActiveNoteService, private menuService: ContextMenuService) {
     noteService.activeNote$.subscribe(active => this.showActiveNote = !!active);
-    noteService.notes$.subscribe(notes => {
-      this.notes = notes
-    })
+    noteService.notes$.subscribe(notes => this.notes = notes)
   }
 
 }

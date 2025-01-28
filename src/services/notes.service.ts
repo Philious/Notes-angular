@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { catchError, map, retry } from 'rxjs/operators';
 import { Note, NoteProps } from '../helpers/types';
 import { UserService } from './user.service';
@@ -48,7 +48,10 @@ export class NoteService {
   setActiveNote(note: Note | null): void {
     this.observedActiveNote.next(note);
   }
-
+  /**
+   * Empty Note object.
+   * @returns Note
+   */
   newNote(): Note {
     const date = new Date().toDateString();
     return {
@@ -64,7 +67,8 @@ export class NoteService {
 
 
   /**
-   * @returns Observable<Note[]>
+   * Retrive all stored notes.
+   * @returns void
    */
   getNotes(): void {
     console.log('get notes');
@@ -83,15 +87,14 @@ export class NoteService {
   }
 
   /**
-   * Fetch a single note by ID.
-   * @param id Note ID
-   * @param token Authorization token
-   * @returns Observable<Note[]>
+   * Add new note.
+   * @param note Note
+   * @returns void
    */
-  addNote(note: NoteProps) {
+  addNote(note: NoteProps): void {
     console.log('Add note');
 
-    return this.http.post<NoteProps>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
+    this.http.post<NoteProps>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
       retry(5),
       catchError((error) => {
         console.error('Error fetching notes:', error);
@@ -101,14 +104,14 @@ export class NoteService {
   }
 
   /**
-   * Fetch a single note by ID.
-   * @param note Note ID
-   * @returns Observable<Note[]>
+   * Update currently active note.
+   * @param note Note
+   * @returns void
    */
-  updateNote(note: Partial<NoteProps> & { id: string }) {
+  updateNote(note: Partial<NoteProps> & { id: string }): void {
     console.log('Update note');
 
-    return this.http.put<Partial<NoteProps>>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
+    this.http.put<Partial<NoteProps>>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
       retry(5),
       catchError((error) => {
         console.error('Error fetching notes:', error);
@@ -120,12 +123,12 @@ export class NoteService {
   /**
    * Fetch a single note by ID.
    * @param note Note ID
-   * @returns Observable<Note[]>
+   * @returns void
    */
-  deleteNote(id: string) {
+  deleteNote(id: string): void {
     console.log('Delete note', id);
 
-    return this.http.delete(`${this.baseUrl}/notes/${this.token}/${id}`, { headers: this.headers }).pipe(
+    this.http.delete(`${this.baseUrl}/notes/${this.token}/${id}`, { headers: this.headers }).pipe(
       catchError((error) => {
         console.error('Error fetching notes:', error);
         throw error; // Re-throw the error after logging it

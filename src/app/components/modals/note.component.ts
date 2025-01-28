@@ -1,10 +1,13 @@
-import { Component, inject, Input, OnInit } from "@angular/core";
-import { IconButtonComponent } from "./action/iconButton.component";
-import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
-import { Note } from "../../helpers/types";
-import { NoteService } from "../../services/notes.service";
-import { map } from "rxjs";
-import { FormsModule, NgModel } from "@angular/forms";
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { IconButtonComponent } from "../action/iconButton.component";
+import { ButtonStyleEnum, IconEnum } from "../../../helpers/enum";
+import { Note } from "../../../helpers/types";
+import { NoteService } from "../../../services/notes.service";
+import { FormsModule } from "@angular/forms";
+import { animate, state, style, transition, trigger } from "@angular/animations";
+import { ContextMenuService } from "../../../services/contextMenu.service";
+import { DialogService } from "../../../services/dialogService";
+import { ActiveNoteService } from "../../../services/activeNote.service";
 
 @Component({
   selector: 'note',
@@ -32,19 +35,19 @@ import { FormsModule, NgModel } from "@angular/forms";
         <icon-button
           [icon]="IconEnum.Left"
           [buttonStyle]="ButtonStyleEnum.Border"
-          (onClick)="cancel()"
+          (onClick)="activeNoteService.cancel(title, content)"
         />
         <icon-button
           [icon]="IconEnum.Check"
           [buttonStyle]="ButtonStyleEnum.Border"
-          (onClick)="save()"
+          (onClick)="activeNoteService.save(title, content)"
         />
       </div>
       <div class="toolbar-right-section">
         <icon-button
-          [icon]="IconEnum.Options"
+          [icon]="IconEnum.Remove"
           [buttonStyle]="ButtonStyleEnum.Border"
-          (onClick)="options()"
+          (onClick)="activeNoteService.delete()"
         />
       </div>
     </div>
@@ -57,7 +60,6 @@ import { FormsModule, NgModel } from "@angular/forms";
     inset: 0 0 0 var(--note-width);
     display: grid;
     grid-template-rows: auto 1.5rem 1fr;
-    z-index: 1;
   }
   .toolbar {
     box-sizing: border-box;
@@ -121,41 +123,43 @@ import { FormsModule, NgModel } from "@angular/forms";
     overflow-y: auto;
     resize: none;
   }
-  `
+  `,
+  animations: [
+    trigger('inOut', [
+      state(
+        'open',
+        style({
+          opacity: 1,
+          transform: 'translateY(0)'
+        })
+      ),
+      state(
+        'closed',
+        style({
+          opacity: 0,
+          transform: 'translateY(3rem)'
+        })
+      ),
+      transition('open => closed', [animate('1s')]),
+      transition('closed => open', [animate('1s')]),
+    ])
+  ]
 })
 
 export class NoteComponent {
+
   IconEnum = IconEnum;
   ButtonStyleEnum = ButtonStyleEnum;
-  note: Note;
-  title = '';
-  content = ''
+
+  @Input() title = '';
+  @Input() content = '';
+
+  @Output() close = new EventEmitter<void>();
+
   createdDate = '';
   updatedDate = '';
 
-  cancel: () => void
-  save: () => void
-  options: () => void
+  constructor(public activeNoteService: ActiveNoteService, private dialogService: DialogService) { }
 
-  constructor(noteService: NoteService) {
-    this.cancel = () => { noteService.setActiveNote(null) }
-    this.save = () => {
-      const id = this.note.id;
-      console.log(id);
-      if (id) noteService.updateNote({ ...this.note, title: this.title })
-      else noteService.addNote({ ...this.note, content: this.title })
-      noteService.setActiveNote(null)
-    }
-    this.options = () => { }
-    this.note = noteService.newNote();
-    noteService.activeNote$.subscribe(note => {
-      if (note) {
-        this.note = note;
-        this.title = note.title;
-        this.content = note.content;
-        this.createdDate = new Date(note?.createdAt).toLocaleDateString('sv-se', { year: "2-digit", month: "2-digit", day: "2-digit" });
-        this.updatedDate = new Date(note?.createdAt).toLocaleDateString('sv-se', { year: "2-digit", month: "2-digit", day: "2-digit" });
-      }
-    })
-  }
+
 }

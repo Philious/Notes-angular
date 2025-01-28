@@ -36,9 +36,15 @@ import { Note } from "../../helpers/types";
       width: 100%;
       height: min-content;
       position: relative;
-      transition: background-color .15s;
-      &:hover {
-        background-color: hsla(0, 0%, 100%, .1);
+      &:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: transparent;
+        transition: background-color .15s;
+      }
+      &:hover:after {
+        background-color: hsla(0,0%,100%,.1)
       }
     }
     .list-item-header {
@@ -54,7 +60,7 @@ import { Note } from "../../helpers/types";
       overflow: hidden;
       white-space-collapse: break-spaces;
       position: relative;
-      &:after {
+      &:before {
         content: "...";
         display: block;
         letter-spacing: .125rem;
@@ -63,9 +69,11 @@ import { Note } from "../../helpers/types";
         height: var(--list-item-line-height);
         width: 100%;
         background: #000;
+        transition: background-color .15s;
         top: calc(var(--list-item-line-height) * 3);
         right: 0;
       }
+
     }
     .list-item-date {
       margin-top: .5rem;

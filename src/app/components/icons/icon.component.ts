@@ -21,8 +21,9 @@ import { ArrowDownIconComponent } from './arrowDown.icon.component';
       <ng-container *ngComponentOutlet="getComponent()" />
   `,
   styles: `
-    :host,
+    :host { display: contents; } 
     .icn {
+      fill: CurrentColor;
       display: block;
       width: 1.5rem;
       height: 1.5rem;

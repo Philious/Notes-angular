@@ -13,9 +13,13 @@
   --note-width: 0;
   --scratch-width: 100vw;
 
-  --list-header-top: var(--day-area-height);
+  --list-header-height: 3rem;
   --list-item-font-size: max(0.6875rem, min(1.3vw, .825rem));
   --list-item-line-height: calc(var(--list-item-font-size) * 1.375);
+
+  --menu-list-item-height: 2.5rem;
+  --menu-vertical-padding: 1rem;
+  --menu-horisontal-padding: 1.5rem;
 
   --txt-large: 1rem;
   --txt-mid: 0.875rem;
@@ -35,6 +39,7 @@
   --n-400: hsl(0deg 0% 44%);
   --n-500: hsl(0, 0%, 64%);
   --n-600: hsl(0, 0%, 80%);
+  --n-700: hsl(0, 0%, 90%);
   --white: #fff;
 
   --clr: var(--white);
@@ -42,6 +47,16 @@
 
   --primary: var(--p-300);
   --error: hsl(0, 55%, 45%);
+
+  --overlay-clr: var(--n-600);
+  --overlay-bg-clr: var(--n-200);
+  --overlay-shadow: 0 0 0 0.0625rem var(--n-400);
+
+  --btn-clr: var(--n-200);
+  --btn-bg-clr: var(--n-700);
+
+  --icn-clr: var(--n-500);
+  --icn-clr-filled: var(--n-100);
 
   @media (prefers-color-scheme: light) {
     --clr: var(--black);

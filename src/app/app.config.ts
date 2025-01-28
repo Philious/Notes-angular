@@ -3,12 +3,18 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withXsrfConfiguration } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(
-    withXsrfConfiguration({
-      cookieName: 'NOTE_COOKIE',
-      headerName: 'X-Custom-Xsrf-Header',
-    }),
-  )]
+  providers: [
+    provideAnimationsAsync(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient(
+      withXsrfConfiguration({
+        cookieName: 'NOTE_COOKIE',
+        headerName: 'X-Custom-Xsrf-Header',
+      }),
+    )
+  ]
 };

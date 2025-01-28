@@ -9,30 +9,30 @@ import { UserService } from "../../../services/user.service";
   imports: [IconComponent, CommonModule],
   template: `
     <div [ngClass]="['bg', buttonStyle]">
-      <button class="icn-btn" (click)="onButtonClick()" [type]="type" base-input>
-        <icon [icon]="icon" class="icn"/>
+      <button class="icn-btn" (click)="onButtonClick($event)" [type]="type" base-input>
+        <icon [icon]="icon" class="icn" [ngStyle]="{color: color}"/>
       </button>
     </div>
     
   `,
   styles: `
-    .icn { fill: var(--n-500) }
     .bg {
       width: 2rem;
       height: 2rem;
       margin: .125rem;
       border-radius: 50%;
       position: relative;
-      &.filled {
-        background-color: var(--n-500);
-        .icn { fill: var(--black); }
-      }
-      &.border {
-        fill: var(--n-500);
-        border: 1px solid var(--n-300);
-      }
+      color: var(--icn-clr)
+    }
+    .filled {
+      background-color: var(--n-500);
+      color: var(--icn-clr-filled); 
+    }
+    .border {
+      border: 1px solid var(--n-300);
     }
     .icn-btn {
+      color: inherit;
       cursor: pointer;
       inset: -.5rem;
       display: grid;
@@ -48,10 +48,11 @@ export class IconButtonComponent {
   @Input() type = 'button';
   @Input() icon!: IconEnum;
   @Input() buttonStyle = ButtonStyleEnum.Transparent;
+  @Input() color: string = 'var(--icon)';
 
-  @Output() onClick = new EventEmitter<void>();
+  @Output() onClick = new EventEmitter<MouseEvent>();
 
-  onButtonClick(): void {
-    this.onClick.emit();
+  onButtonClick(event: MouseEvent): void {
+    this.onClick.emit(event);
   }
 }
