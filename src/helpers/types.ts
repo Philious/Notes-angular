@@ -1,5 +1,4 @@
-import { FormControl } from "@angular/forms";
-import { IconEnum, InputState } from "./enum";
+import { IconEnum } from "./enum";
 
 export type Note = {
   id: string;

@@ -1,4 +1,4 @@
-import { Injectable, ApplicationRef, ComponentRef, createComponent, Signal, EnvironmentInjector, Injector, ViewContainerRef } from '@angular/core';
+import { Injectable, ApplicationRef, ComponentRef, createComponent, EnvironmentInjector } from '@angular/core';
 import { Note } from '../helpers/types';
 import { NoteComponent } from '../app/components/modals/note.component';
 import { NoteService } from './notes.service';
@@ -37,26 +37,31 @@ export class ActiveNoteService {
   }
 
   save(title: string, content: string): void {
-    if (this.note.id) {
-      this.noteService.updateNote({ ...this.note, title: title })
+    console.log('save');
+    if (this.note.title === title && this.note.content === content) {
+      console.log('do nothing')
+      this.dialogService.close()
+      this.close();
+    } else if (this.note.id) {
+      console.log('update');
+      this.noteService.updateNote({ ...this.note, title, content })
     } else { this.noteService.addNote({ ...this.note, content, title }) }
     this.noteService.setActiveNote(null);
     this.dialogService.close()
     this.close();
   }
 
+  // cancel / back / close active note
   cancel(title: string, content: string): void {
-    console.log(this.note.title, this.note.content, title, content)
     if (this.note.title === title && this.note.content === content) {
       this.dialogService.close()
       this.close();
     } else {
       this.dialogService.open([
-        { id: 'id1', label: 'Cancel', action: this.dialogService.close },
+        { id: 'id1', label: 'Cancel', action: () => this.dialogService.close() },
         { id: 'id2', label: 'Save Changes', action: () => this.save(title, content) },
         {
           id: 'id3', label: 'Discard Changes', action: () => {
-            console.log('discard');
             this.dialogService.close();
             this.close();
           }
@@ -69,7 +74,13 @@ export class ActiveNoteService {
     if (this.note.id) {
       this.dialogService.open([
         { id: 'id1', label: 'Cancel', action: () => this.dialogService.close() },
-        { id: 'id2', label: 'Remove', action: () => this.noteService.deleteNote(this.note.id) }
+        {
+          id: 'id2', label: 'Remove', action: () => {
+            this.noteService.deleteNote(this.note.id);
+            this.dialogService.close();
+            this.close();
+          }
+        }
       ], 'Delete note?')
     } else {
       this.dialogService.close();
@@ -79,6 +90,7 @@ export class ActiveNoteService {
 
   close(): void {
     if (this.activeNoteRef) {
+      this.note = newNote();
       this.appRef.detachView(this.activeNoteRef.hostView);
       this.activeNoteRef.destroy();
       this.activeNoteRef = null;

@@ -26,12 +26,10 @@ export class UserService {
     if (cookie) {
       const check$ = this.checkLoginStatus(cookie);
       check$.subscribe(state => {
-        console.log('user blorg: ', state);
         if (state) {
-          console.log(cookie);
           this.token.next(cookie)
         } else {
-          // router.navigate(["login"])
+          router.navigate(["login"])
         }
       })
     }
@@ -39,15 +37,13 @@ export class UserService {
 
   /**
    * @param email string
-   * @param password password
+   * @param password string
    * @returns User | null
    */
   createUser(email: string, password: string) {
-    console.log('create user');
-
     return this.http.post<LoginDetails>(`${this.baseUrl}/users`, { email, password }, { headers: this.headers }).pipe(
-      catchError((error) => {
-        console.error('Error fetching notes:', error);
+      catchError((error: Error) => {
+        console.error('Error creating user:', error.message);
         throw error;
       })
     );
@@ -60,12 +56,11 @@ export class UserService {
    */
   login(email: string, password: string): void {
     this.http.get<string>(`${this.baseUrl}/users/login/${email}/${password}`, { headers: this.headers }).pipe(
-      catchError((error) => {
-        console.error('Error fetching notes:', error);
+      catchError((error: Error) => {
+        console.error('Error fetching notes:', error.message);
         throw error;
       })
     ).subscribe(token => {
-      console.log('login function: ', token);
       setCookie('NOTE_COOKIE', token, 1);
       this.token.next(token);
     });
@@ -75,14 +70,10 @@ export class UserService {
    * @returns void
    */
   logout() {
-    console.log('logout');
     deleteCookie('NOTE_COOKIE');
-    // if (!this.token) return console.log('User already logged out');
-
-    console.log(`${this.baseUrl}/users/logout/${this.token.value}`, this.token.value);
     return this.http.delete(`${this.baseUrl}/users/logout/${this.token.value}`, { headers: this.headers }).pipe(
-      catchError((error) => {
-        console.error('Error fetching notes:', error);
+      catchError((error: Error) => {
+        console.error('Error fetching notes:', error.message);
         throw error;
       })
     ).subscribe(_ => {
@@ -95,8 +86,6 @@ export class UserService {
    * @returns boolean
    */
   checkLoginStatus(token: string | null) {
-    console.log('check');
-
     return this.http.get<boolean>(`${this.baseUrl}/users/check/${token}`, { headers: this.headers }).pipe(
       catchError((error) => {
         console.error('Error fetching notes:', error);

@@ -3,7 +3,6 @@ import { Note } from "../../helpers/types";
 
 @Component({
   selector: 'list-item',
-  imports: [],
   template: `
     <button
       class="list-item"

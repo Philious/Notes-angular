@@ -1,4 +1,4 @@
-import { Component, ComponentRef, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { actionButton } from '../../../helpers/types';
 import { TextButton } from '../action/textButton.component';
 
@@ -28,6 +28,7 @@ import { TextButton } from '../action/textButton.component';
   `,
   styles: [
     `
+      @use 'media-size.mixins' as media;
       .dialog-backdrop {
         opacity: 0;
         position: fixed;
@@ -36,8 +37,6 @@ import { TextButton } from '../action/textButton.component';
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-
       }
       .dialog-box {
         position: fixed;
@@ -49,11 +48,15 @@ import { TextButton } from '../action/textButton.component';
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 1001;
-        max-width: 90%;
-        width: 400px;
+        min-width: 18rem;
         display: grid;
         gap: 1.5rem;
+        box-sizing: border-box;
+        @include media.mobile {
+          transform: translate(0, 0);
+          inset: auto 1rem 1rem 1rem;
+          width: auto;
+        }
       }
       .close-btn {
         margin-top: 15px;
@@ -68,6 +71,9 @@ import { TextButton } from '../action/textButton.component';
         margin-top: 1.5rem;
         display: flex;
         gap: 1rem;
+        @include media.mobile {
+          flex-direction: column-reverse;
+        }
       }
     `,
   ],

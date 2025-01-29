@@ -1,7 +1,6 @@
 import {
   Injectable,
   ApplicationRef,
-
   ComponentRef,
   EnvironmentInjector,
   createComponent,
@@ -19,7 +18,6 @@ export class DialogService {
   ) { }
 
   open(actionButtons: actionButton[], title?: string, content?: string): void {
-    console.log('open dialog');
     const dialogRef = createComponent(DialogComponent, {
       environmentInjector: this.environmentInjector,
     });
@@ -35,7 +33,6 @@ export class DialogService {
   }
 
   close(): void {
-    console.log('dialog close');
     if (this.dialogRef) {
       this.appRef.detachView(this.dialogRef.hostView);
       this.dialogRef.destroy();

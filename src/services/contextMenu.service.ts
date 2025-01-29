@@ -1,17 +1,6 @@
-import { Injectable, ApplicationRef, ComponentRef, createComponent, Signal, EnvironmentInjector, Injector, ViewContainerRef } from '@angular/core';
+import { Injectable, ApplicationRef, ComponentRef, createComponent, EnvironmentInjector } from '@angular/core';
 import { ContextMenuComponent } from '../app/components/modals/contextMenu.component';
 import { Option } from '../helpers/types';
-import { getPosition } from '../helpers/utils';
-/*
-class GenericComponent {
-  @Input() options: Option[] | null = null;
-  @Output() close = new EventEmitter<void>();
-
-  onClose(): void {
-    this.close.emit();
-  }
-}
-*/
 
 @Injectable({ providedIn: 'root' })
 export class ContextMenuService {

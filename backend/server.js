@@ -44,6 +44,7 @@ app.post("/users", (req, res) => {
 
 // Login
 app.get("/users/login/:email/:password", (req, res) => {
+  console.log("login");
   const userIndex = users.findIndex(
     (u) => u.email === req.params.email && u.password === req.params.password
   );
@@ -51,13 +52,7 @@ app.get("/users/login/:email/:password", (req, res) => {
   if (userIndex >= 0) {
     const token = uuid.v4();
     users[userIndex].token = token;
-    /*
-    res.cookie("note-cookie", token, {
-      domain: "localhost", // Correct domain
-      expires: new Date(Date.now() + 900000),
-      maxAge: 1800000,
-    });
-    */
+
     console.log("Pass token", token);
     res.status(200).json(token);
   } else {
@@ -67,6 +62,7 @@ app.get("/users/login/:email/:password", (req, res) => {
 
 // Logout
 app.delete("/users/logout/:token", (req, res) => {
+  console.log("logout");
   const userIndex = users.findIndex((u) => u.token === req.params.token);
 
   if (userIndex < 0) return errorResponse(res, 500);
@@ -79,6 +75,7 @@ app.delete("/users/logout/:token", (req, res) => {
 
 /// Checktoken
 app.get("/users/check/:token", (req, res) => {
+  console.log("check token");
   const user = users.find((u) => u.token === req.params.token);
 
   res.status(200).json(!!user);
@@ -97,8 +94,24 @@ app.get("/notes/:token", (req, res) => {
   res.status(200).json(userNotes);
 });
 
+// Get note
+app.get("/notes/:token/:noteId", (req, res) => {
+  const userIndex = users.findIndex((u) => u.token === req.params.token);
+  const noteId = req.params.noteId;
+
+  if (userIndex < 0)
+    return res.status(404).json({ error: "No user with that token" });
+
+  const userId = users[userIndex]?.uuid;
+  const userNotes = notes[userId];
+  const note = userNotes.find((n) => n.id === noteId);
+
+  res.status(200).json(note);
+});
+
 // Create a new note
 app.post("/notes/:token", (req, res) => {
+  console.log("new note");
   const note = req.body;
   const userIndex = users.findIndex((u) => u.token === req.params.token);
 
@@ -109,20 +122,20 @@ app.post("/notes/:token", (req, res) => {
   const date = new Date();
 
   const newNote = {
-    id: uuid.v4(),
+    ...note,
     createdAt: date,
     updatedAt: date,
-    ...note,
+    id: uuid.v4(),
   };
 
   notes[userId].push(newNote);
-  const userNotes = notes[userId];
 
-  res.status(200).json(userNotes);
+  res.status(200).json(newNote);
 });
 
-// Modify an existing note # id: string, Partial<{ title: string, content: string, catalog: string, tags: string[] }>
+// Update note # id: string, Partial<{ title: string, content: string, catalog: string, tags: string[] }>
 app.put("/notes/:token/", (req, res) => {
+  console.log("update note");
   const note = req.body;
   const userIndex = users.findIndex((u) => u.token === req.params.token);
 
@@ -144,28 +157,25 @@ app.put("/notes/:token/", (req, res) => {
   };
 
   notes[userId][noteIndex] = currentNote;
-  const userNotes = notes[userId];
 
-  res.status(200).json(userNotes);
+  return res.status(200).json("");
 });
 
 // Delete an existing note # id string
 app.delete("/notes/:token/:noteId", (req, res) => {
   const userIndex = users.findIndex((u) => u.token === req.params.token);
-  console.log("userIndex", userIndex);
+
   if (userIndex < 0)
     return res.status(404).json({ error: "No user with that token" });
 
   const userId = users[userIndex].uuid;
 
   const noteIndex = notes[userId].findIndex((n) => n.id === req.params.noteId);
-  console.log("noteIndex", noteIndex);
+
   if (noteIndex < 0) {
     res.status(404).json({ error: "Note doesn't exist" });
   } else {
     notes[userId].splice(noteIndex, 1);
-    const userNotes = notes[userId];
-    res.status(200).json(userNotes);
   }
 });
 

@@ -1,17 +1,13 @@
 import { Component } from '@angular/core';
 import { DayInfoComponent } from '../components/dayInfo.component';
 import { NoteListComponent } from '../components/noteList.component';
-import { NoteComponent } from '../components/modals/note.component';
-import { NoteService } from '../../services/notes.service';
-import { fadeUp } from '../../helpers/utils';
 
 @Component({
   selector: 'notes',
-  imports: [DayInfoComponent, NoteListComponent, NoteComponent,],
+  imports: [DayInfoComponent, NoteListComponent],
   template: `
     <day-info></day-info>
     <note-list></note-list>
-    <note [@inOut]="activeNote ? 'open' : 'closed'" class="note" [class.active]="activeNote"></note>
   `,
   styles: [
     `
@@ -28,16 +24,8 @@ import { fadeUp } from '../../helpers/utils';
       }
     }
     `
-  ],
-  animations: fadeUp
+  ]
 })
 export class NotesPage {
-  activeNote = false;
-
-  constructor(private noteService: NoteService) {
-    this.noteService.activeNote$.subscribe((active) => {
-      this.activeNote = !!active;
-    });
-  }
 
 }

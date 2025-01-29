@@ -91,11 +91,11 @@ export class DayInfoComponent implements OnInit {
 
     const timeRanges = [
       { range: [0, 5], greeting: 'Sleep', imgUrl: 'assets/images/night.png' },
-      { range: [5, 9], greeting: 'Good Morning', imgUrl: 'images/morning.png' },
+      { range: [5, 9], greeting: 'Good Morning', imgUrl: 'assets/images/morning.png' },
       { range: [9, 12], greeting: 'Good Day', imgUrl: 'assets/images/midday.png' },
-      { range: [12, 17], greeting: 'Good Afternoon', imgUrl: 'images/afternoon.png' },
-      { range: [17, 23], greeting: 'Good Evening', imgUrl: 'images/evening.png' },
-      { range: [23, 24], greeting: 'Good Night', imgUrl: 'images/night.png' },
+      { range: [12, 17], greeting: 'Good Afternoon', imgUrl: 'assets/images/afternoon.png' },
+      { range: [17, 23], greeting: 'Good Evening', imgUrl: 'assets/images/evening.png' },
+      { range: [23, 24], greeting: 'Good Night', imgUrl: 'assets/images/night.png' },
     ];
 
     this.timeOfDay = timeRanges.find(({ range }) => hour >= range[0] && hour < range[1]) ||

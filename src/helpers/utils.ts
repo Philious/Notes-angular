@@ -43,26 +43,6 @@ export const newNote = (): Note => {
   }
 }
 
-export const fadeUp = [
-  trigger('inOut', [
-    state(
-      'open',
-      style({
-        opacity: 1,
-        transform: 'translateY(0)'
-      })
-    ),
-    state(
-      'closed',
-      style({
-        opacity: 0,
-        transform: 'translateY(3rem)'
-      })
-    ),
-    transition('open <=> closed', [animate('.25s cubic-bezier(0, 0.55, 0.45, 1)')]),
-  ])
-]
-
 export const getPosition = (parent: Position, child: Position, place: 'top' | 'right' | 'bottom' | 'left' = 'bottom', padding: number = 0, margin: number = 4) => {
   const p = parent
   const c = child
@@ -95,8 +75,7 @@ export const getPosition = (parent: Position, child: Position, place: 'top' | 'r
     left: Math.min(x, p.left)
   }
 
-
-  console.log(resultingMargins)
+  // Fix check if outside of view
   /*
   y = y > margin ? y : p.bottom + padding;
   y = y + c.top + margin > (maxY + margin) ? y : p.bottom + padding;

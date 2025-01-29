@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, map, retry } from 'rxjs/operators';
 import { Note, NoteProps } from '../helpers/types';
 import { UserService } from './user.service';
 import { sortNotes } from '../helpers/utils';
 import { Router } from '@angular/router';
-
-
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +21,9 @@ export class NoteService {
 
   private observedNotes = new BehaviorSubject<Note[]>([]);
   public notes$: Observable<Note[]> = this.observedNotes.asObservable().pipe(
-    map(notes => sortNotes(notes))
+    map(notes => {
+      return sortNotes(notes)
+    })
   );
 
   private observedActiveNote = new BehaviorSubject<Note | null>(null);
@@ -32,7 +32,6 @@ export class NoteService {
   constructor(private http: HttpClient, private userService: UserService, router: Router) {
     this.router = router;
     this.userService.token$.subscribe(token => {
-      console.log('token update', token);
       this.token = token;
       if (token) {
         this.getNotes();
@@ -48,6 +47,7 @@ export class NoteService {
   setActiveNote(note: Note | null): void {
     this.observedActiveNote.next(note);
   }
+
   /**
    * Empty Note object.
    * @returns Note
@@ -65,25 +65,39 @@ export class NoteService {
     }
   }
 
-
   /**
    * Retrive all stored notes.
    * @returns void
    */
   getNotes(): void {
-    console.log('get notes');
     this.http.get<Note[]>(`${this.baseUrl}/notes/${this.token}`, { headers: this.headers }).pipe(
       retry(5),
       map(body => (body ?? []) as Note[]),
-      catchError((error) => {
-        console.error('Error fetching notes:', error);
+      catchError((error: Error) => {
+        console.error('Error fetching notes:', error.message);
         throw error;
       })
     ).subscribe(notes => {
-      console.log('notes', notes);
       this.observedNotes.next(notes);
     });
+  }
 
+  /**
+ * Retrive all stored notes.
+ * @returns void
+ */
+  getNote(noteId: string): void {
+    this.http.get<Note>(`${this.baseUrl}/notes/${this.token}/${noteId}`, { headers: this.headers }).pipe(
+      retry(5),
+      catchError((error: Error) => {
+        throw error;
+      })
+    ).subscribe(note => {
+      const notes = [...this.observedNotes.getValue()];
+      const index = notes.findIndex(n => n.id === noteId);
+      notes[index] = note;
+      this.observedNotes.next(notes);
+    });
   }
 
   /**
@@ -92,15 +106,17 @@ export class NoteService {
    * @returns void
    */
   addNote(note: NoteProps): void {
-    console.log('Add note');
-
-    this.http.post<NoteProps>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
+    this.http.post<Note>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
       retry(5),
-      catchError((error) => {
-        console.error('Error fetching notes:', error);
-        throw error; // Re-throw the error after logging it
+      catchError((error: Error) => {
+        console.error('Error adding note:', error.message);
+        throw error;
       })
-    ).subscribe(response => console.log(response));
+    ).subscribe(note => {
+      const notes = [...this.observedNotes.getValue()];
+      notes.push(note);
+      this.observedNotes.next(notes);
+    });
   }
 
   /**
@@ -109,15 +125,15 @@ export class NoteService {
    * @returns void
    */
   updateNote(note: Partial<NoteProps> & { id: string }): void {
-    console.log('Update note');
-
-    this.http.put<Partial<NoteProps>>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
+    this.http.put<void>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
       retry(5),
-      catchError((error) => {
-        console.error('Error fetching notes:', error);
+      catchError((error: Error) => {
+        console.error('Error updating note:', error.message);
         throw error; // Re-throw the error after logging it
       })
-    ).subscribe(notes => this.observedNotes.next(notes as Note[]));
+    ).subscribe(_ => {
+      this.getNote(note.id)
+    });
   }
 
   /**
@@ -126,13 +142,16 @@ export class NoteService {
    * @returns void
    */
   deleteNote(id: string): void {
-    console.log('Delete note', id);
-
     this.http.delete(`${this.baseUrl}/notes/${this.token}/${id}`, { headers: this.headers }).pipe(
-      catchError((error) => {
-        console.error('Error fetching notes:', error);
+      catchError((error: Error) => {
+        console.error('Error deleting notes:', error.message);
         throw error; // Re-throw the error after logging it
       })
-    );
+    ).subscribe(_ => {
+      const notes = [...this.observedNotes.getValue()];
+      const index = notes.findIndex(n => n.id === id);
+      notes.splice(index, 1);
+      this.observedNotes.next(notes);
+    });
   }
 }

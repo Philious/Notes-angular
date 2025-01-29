@@ -31,6 +31,7 @@ import { getPosition } from "../../../helpers/utils";
     }
   `,
   styles: `
+    @use 'media-size.mixins' as media;
     :host { display: contents; }
     .mask {
       position: fixed;
@@ -51,16 +52,27 @@ import { getPosition } from "../../../helpers/utils";
         opacity: 1;
         transform: translateY(0);
       }
+      @include media.mobile {
+       inset: auto 1rem 1rem 1rem !important;
+       padding: 0;
+      }
     }
     .option {
       position: relative;
       color: var(--overlay-clr);
       height: var(--menu-list-item-height);
       min-width: 12.5rem;
+      &:not(:last-child) { border-bottom: 0.0625rem solid var(--option-border); }
+      @include media.mobile {
+        height: 3rem;
+      }
     }
     .option-btn {
       text-align: left;
       padding-inline: var(--menu-horisontal-padding);
+      @include media.mobile {
+        text-align: center;
+      }
     }
   `
 })
@@ -77,7 +89,6 @@ export class ContextMenuComponent implements AfterViewInit {
   visible = false;
 
   onClose(): void {
-    console.log('close');
     this.visible = false;
     setTimeout(() => this.close.emit(), 250)
   }

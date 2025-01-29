@@ -119,7 +119,7 @@ export class NoteListComponent {
 
   notes: Note[] = [];
   showActiveNote = false;
-  testclick = () => { console.log('click') };
+
   updateAppFontSize = (size: number) => {
     document.documentElement.style.setProperty("--app-font-size", `${size}px`);
     this.menuService.close()
@@ -137,7 +137,10 @@ export class NoteListComponent {
 
   constructor(noteService: NoteService, public activeNoteService: ActiveNoteService, private menuService: ContextMenuService) {
     noteService.activeNote$.subscribe(active => this.showActiveNote = !!active);
-    noteService.notes$.subscribe(notes => this.notes = notes)
+    noteService.notes$.subscribe(notes => {
+      console.log('list update', notes)
+      this.notes = notes
+    })
   }
 
 }

@@ -49,11 +49,13 @@
   --error: hsl(0, 55%, 45%);
 
   --overlay-clr: var(--n-600);
-  --overlay-bg-clr: var(--n-200);
+  --overlay-bg-clr: var(--n-300);
   --overlay-shadow: 0 0 0 0.0625rem var(--n-400);
+  
+  --option-border: var(--black);
 
-  --btn-clr: var(--n-200);
-  --btn-bg-clr: var(--n-700);
+  --btn-clr: var(--n-700);
+  --btn-bg-clr: var(--n-100);
 
   --icn-clr: var(--n-500);
   --icn-clr-filled: var(--n-100);

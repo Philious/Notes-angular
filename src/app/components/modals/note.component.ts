@@ -1,12 +1,7 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { IconButtonComponent } from "../action/iconButton.component";
 import { ButtonStyleEnum, IconEnum } from "../../../helpers/enum";
-import { Note } from "../../../helpers/types";
-import { NoteService } from "../../../services/notes.service";
 import { FormsModule } from "@angular/forms";
-import { animate, state, style, transition, trigger } from "@angular/animations";
-import { ContextMenuService } from "../../../services/contextMenu.service";
-import { DialogService } from "../../../services/dialogService";
 import { ActiveNoteService } from "../../../services/activeNote.service";
 
 @Component({
@@ -123,27 +118,7 @@ import { ActiveNoteService } from "../../../services/activeNote.service";
     overflow-y: auto;
     resize: none;
   }
-  `,
-  animations: [
-    trigger('inOut', [
-      state(
-        'open',
-        style({
-          opacity: 1,
-          transform: 'translateY(0)'
-        })
-      ),
-      state(
-        'closed',
-        style({
-          opacity: 0,
-          transform: 'translateY(3rem)'
-        })
-      ),
-      transition('open => closed', [animate('1s')]),
-      transition('closed => open', [animate('1s')]),
-    ])
-  ]
+  `
 })
 
 export class NoteComponent {
@@ -159,7 +134,7 @@ export class NoteComponent {
   createdDate = '';
   updatedDate = '';
 
-  constructor(public activeNoteService: ActiveNoteService, private dialogService: DialogService) { }
+  constructor(public activeNoteService: ActiveNoteService) { }
 
 
 }

@@ -9,6 +9,7 @@ import { IconComponent } from "../icons/icon.component";
     </button>
   `,
   styles: `
+    @use 'media-size.mixins' as media;
     :host { display: contents; }
     .btn {
       height: 2rem;
@@ -19,10 +20,14 @@ import { IconComponent } from "../icons/icon.component";
       border-radius: 0.25rem;
       border: none;
       position: relative;
+      box-sizing: border-box;
       &:after {
         content: "";
         position: absolute;
         inset: -.25rem 0;
+      }
+      @include media.mobile {
+        height: 2.5rem;
       }
     }
   `

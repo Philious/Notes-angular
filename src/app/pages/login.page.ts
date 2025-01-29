@@ -5,7 +5,6 @@ import { InputLayoutComponent } from '../components/action/input.layout.componen
 import { IconButtonComponent } from '../components/action/iconButton.component';
 import { ButtonStyleEnum, IconEnum, InputState } from '../../helpers/enum';
 import { UserService } from '../../services/user.service';
-import { NoteService } from '../../services/notes.service';
 
 export enum PageState {
   Login,
