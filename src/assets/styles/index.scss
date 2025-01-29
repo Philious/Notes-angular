@@ -1,7 +1,9 @@
 @use 'css.variables' as *;
-@use 'easing.mixins' as e;
 @forward 'media-size.mixins';
 @use 'component.mixins' as c;
+
+$easeInOutQuint: cubic-bezier(0.83, 0, 0.17, 1);
+$easeOutQuint: cubic-bezier(0.22, 1, 0.36, 1);
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -16,7 +18,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @include e.easing;
   @include c.components;
 }
 

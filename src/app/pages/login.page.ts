@@ -7,9 +7,9 @@ import { ButtonStyleEnum, IconEnum, InputState } from '../../helpers/enum';
 import { UserService } from '../../services/user.service';
 
 export enum PageState {
-  Login,
-  NewUser,
-  Forgot
+  Login = 'login',
+  NewUser = 'new',
+  Forgot = 'forgot'
 }
 
 @Component({
@@ -17,22 +17,21 @@ export enum PageState {
   imports: [InputLayoutComponent, IconButtonComponent, ReactiveFormsModule, NgIf],
   template: `
     <div class="login-view">
-      <div class="title">Notes</div>
-      <form class="form" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <div class="title">{{title}}</div>
+      <form class="form" [formGroup]="profileForm" (ngSubmit)="onSubmit()" [class]="pageState">
         <input-layout [inputId]="'email'" [label]="'Email'" class="email" [state]="emailFieldState" [helpText]="emailFieldHelpText"> 
           <input id="email" type="text" formControlName="email" autocomplete="on" base-input />
         </input-layout>
-        {{passwordFieldHelpText}}
-        <input-layout [inputId]="'password'" [label]="'Password'"  class="password" [state]="passwordFieldState" [helpText]="passwordFieldHelpText"> 
+        <input-layout *ngIf="pageState != PageState.Forgot" [inputId]="'password'" [label]="'Password'"  class="password" [state]="passwordFieldState" [helpText]="passwordFieldHelpText"> 
           <input id="password" type="text" formControlName="password" base-input />
         </input-layout>
-        <icon-button [icon]="IconEnum.Right" [buttonStyle]="ButtonStyleEnum.Filled" [type]="'submit'" class="action-btn"/>
-        <div class="buttons">
-          <button *ngIf="pageState != PageState.Login" class="vertical back" (click)="updateState(PageState.Login)" btn text-btn>Login</button>
-          <button *ngIf="pageState != PageState.NewUser" class="vertical new" (click)="updateState(PageState.NewUser)" btn text-btn>New User</button>
-          <button *ngIf="pageState != PageState.Forgot" class="vertical forgot" (click)="updateState(PageState.Forgot)" btn text-btn>Forgot\npassword</button>
-        </div>
+        <icon-button [icon]="IconEnum.Right" [buttonStyle]="ButtonStyleEnum.Filled" [type]="'submit'" class="action-btn" />
       </form>
+      <div class="buttons">
+        <button *ngIf="pageState != PageState.Login" class="vertical back" (click)="updateState(PageState.Login)" btn text-btn>Back</button>
+        <button *ngIf="pageState === PageState.Login" class="vertical new" (click)="updateState(PageState.NewUser)" btn text-btn>New User</button>
+        <button *ngIf="pageState === PageState.Login" class="vertical forgot" (click)="updateState(PageState.Forgot)" btn text-btn>Forgot\npassword</button>
+      </div>
     </div>
   `,
   styles: `
@@ -46,16 +45,29 @@ export enum PageState {
       padding: 2rem;
       max-width: 20rem;
       margin: auto;
-      grid-template-rows: 1fr repeat(3, min-content) 1fr min-content;
+      grid-template-rows: 1fr repeat(3, 3.375rem) 1fr min-content;
       grid-template-columns: 1fr 3.5rem;
       place-items: center start;
       
       .title { grid-area: 2 / 1 / 3 / 2 }
       .email { grid-area: 3 / 1 / 4 / 2; }
-      .password { grid-area: 4 / 1 / 5 / 2; }
-      .action-btn { grid-area: 4 / 3 / 5 / 2; }
+      .password {
+        grid-area: 4 / 1 / 5 / 2;
+        transition: opacity .25s, transform .25s;
+      }
+      .action-btn {
+        grid-area: 4 / 3 / 5 / 2;
+        transition: transform .25s;
+      }
       .buttons { grid-area: 6 / 1 / 7 / 3; }
       .update-email-btn { transform: translateY(calc(-100% - .75rem)) }
+      .forgot {
+        .action-btn { transform: translateY(-4.325rem); }
+        .password {
+          opacity: 0;
+          transform: translateY(-4.325rem) scale(0);
+        }
+      }
     }
     .form { display: contents; }
     .action-btn {
@@ -98,6 +110,8 @@ export class LoginPage {
   ButtonStyleEnum = ButtonStyleEnum;
   PageState = PageState;
 
+  title: string = 'Notes';
+
   pageState = PageState.Login;
 
   emailFieldState = InputState.Default;
@@ -105,7 +119,6 @@ export class LoginPage {
 
   passwordFieldState = InputState.Default;
   passwordFieldHelpText = '';
-
 
   helpText = (errors: ValidationErrors | null): string => {
     const key = Object.keys(errors ?? [])?.[0];
@@ -127,6 +140,9 @@ export class LoginPage {
 
   updateState(state: PageState) {
     this.pageState = state;
+    if (PageState.Forgot === state) this.title = 'Forgot Password';
+    else if (PageState.NewUser === state) this.title = 'New User';
+    else this.title = 'Notes';
   }
 
   onSubmit(): void {
