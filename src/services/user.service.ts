@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { BehaviorSubject, ObservableInput, of, Subject } from 'rxjs';
+import { catchError, retry, takeUntil } from 'rxjs/operators';
 import { LoginDetails } from '../helpers/types';
 import { deleteCookie, getCookie, setCookie } from '../helpers/utils';
 import { Router } from '@angular/router';
@@ -9,7 +9,8 @@ import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {
+export class UserService implements OnDestroy {
+
   private baseUrl = 'http://localhost:3000';
   private headers = new HttpHeaders({
     "Content-Type": "application/json",
@@ -17,7 +18,7 @@ export class UserService {
   });
   private token = new BehaviorSubject<string | null>(null);
   token$ = this.token.asObservable();
-
+  private destroy$ = new Subject<void>();
   public loading = false;
 
   constructor(private http: HttpClient, router: Router) {
@@ -25,14 +26,28 @@ export class UserService {
 
     if (cookie) {
       const check$ = this.checkLoginStatus(cookie);
-      check$.subscribe(state => {
-        if (state) {
-          this.token.next(cookie)
-        } else {
-          router.navigate(["login"])
-        }
-      })
+      check$
+        .pipe(
+          takeUntil(this.destroy$),
+          catchError(error => {
+            console.error("Error checking login status:", error);
+            router.navigate(["login"]);
+            return []; // Return an empty array to prevent breaking the observable stream
+          })
+        )
+        .subscribe(state => {
+          if (state) {
+            this.token.next(cookie)
+          } else {
+            router.navigate(["login"])
+          }
+        })
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(); // ✅ Cleanup all active subscriptions
+    this.destroy$.complete();
   }
 
   /**
@@ -42,7 +57,8 @@ export class UserService {
    */
   createUser(email: string, password: string) {
     return this.http.post<LoginDetails>(`${this.baseUrl}/users`, { email, password }, { headers: this.headers }).pipe(
-      catchError((error: Error) => {
+      retry(5),
+      catchError((error) => {
         console.error('Error creating user:', error.message);
         throw error;
       })
@@ -56,7 +72,8 @@ export class UserService {
    */
   login(email: string, password: string): void {
     this.http.get<string>(`${this.baseUrl}/users/login/${email}/${password}`, { headers: this.headers }).pipe(
-      catchError((error: Error) => {
+      retry(5),
+      catchError((error) => {
         console.error('Error fetching notes:', error.message);
         throw error;
       })
@@ -71,14 +88,14 @@ export class UserService {
    */
   logout() {
     deleteCookie('NOTE_COOKIE');
+    this.token.next(null)
     return this.http.delete(`${this.baseUrl}/users/logout/${this.token.value}`, { headers: this.headers }).pipe(
-      catchError((error: Error) => {
-        console.error('Error fetching notes:', error.message);
-        throw error;
+      retry(5),
+      catchError((error: Error, caught) => {
+        console.error('Error fetching notes:', error);
+        return caught;
       })
-    ).subscribe(_ => {
-      this.token.next(null)
-    });
+    )
   }
 
   /**
@@ -89,11 +106,11 @@ export class UserService {
     return this.http.get<boolean>(`${this.baseUrl}/users/check/${token}`, { headers: this.headers }).pipe(
       catchError((error) => {
         console.error('Error fetching notes:', error);
-        throw error;
+        return of(false)
       })
     );
   }
 
-  updatePassword(email: string) { alert(`Not really sending anything to ${email}`) }
+  updatePassword(email: string) { alert(`Not implemented, no email sent to ${email}`) }
 
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnDestroy, Renderer2, ViewChild } from "@angular/core";
 import { IconButtonComponent } from "./action/iconButton.component";
 import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
 import { ListItem } from "./noteListItem";
@@ -6,6 +6,7 @@ import { NoteService } from "../../services/notes.service";
 import { Note } from "../../helpers/types";
 import { ContextMenuService } from "../../services/contextMenu.service";
 import { ActiveNoteService } from "../../services/activeNote.service";
+import { Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: 'note-list',
@@ -111,8 +112,9 @@ import { ActiveNoteService } from "../../services/activeNote.service";
   `
 })
 
-export class NoteListComponent {
-  @ViewChild('letterSizeButton', { static: false, read: ElementRef }) letterSizeBtn!: ElementRef;
+export class NoteListComponent implements OnDestroy {
+  @ViewChild('letterSizeButton', { static: false, read: ElementRef }) private letterSizeBtn!: ElementRef;
+  private destroy$ = new Subject<void>();
 
   IconEnum = IconEnum;
   ButtonStyleEnum = ButtonStyleEnum;
@@ -120,8 +122,31 @@ export class NoteListComponent {
   notes: Note[] = [];
   showActiveNote = false;
 
-  updateAppFontSize = (size: number) => {
-    document.documentElement.style.setProperty("--app-font-size", `${size}px`);
+  constructor(
+    noteService: NoteService,
+    public activeNoteService: ActiveNoteService,
+    private menuService: ContextMenuService,
+    private renderer: Renderer2,
+  ) {
+    noteService.activeNote$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(active => {
+        this.showActiveNote = !!active
+      });
+    noteService.notes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(notes => {
+        this.notes = notes
+      })
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  updateAppFontSize(size: number) {
+    this.renderer.setProperty(document.documentElement, 'style', `--app-font-size: ${size}px`);
     this.menuService.close()
   }
 
@@ -133,14 +158,6 @@ export class NoteListComponent {
         { id: 'id3', label: 'Small', action: () => this.updateAppFontSize(12) }
       ], this.letterSizeBtn.nativeElement)
     }
-  }
-
-  constructor(noteService: NoteService, public activeNoteService: ActiveNoteService, private menuService: ContextMenuService) {
-    noteService.activeNote$.subscribe(active => this.showActiveNote = !!active);
-    noteService.notes$.subscribe(notes => {
-      console.log('list update', notes)
-      this.notes = notes
-    })
   }
 
 }

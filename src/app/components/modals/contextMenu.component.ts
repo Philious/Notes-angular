@@ -39,11 +39,10 @@ import { getPosition } from "../../../helpers/utils";
     .context-menu {
       top: 0;
       margin: 0;
+      padding: 0;
       background-color: var(--overlay-bg-clr);
       position: absolute;
-      padding-block: var(--menu-vertical-padding);
       border-radius: 0.25rem;
-      padding: .5rem 0;
       list-style-type: none;
       opacity: 0;
       transform: translateY(1rem);

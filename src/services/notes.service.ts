@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { catchError, map, retry } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { catchError, map, retry, takeUntil } from 'rxjs/operators';
 import { Note, NoteProps } from '../helpers/types';
 import { UserService } from './user.service';
 import { sortNotes } from '../helpers/utils';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root',
 })
-export class NoteService {
+export class NoteService implements OnDestroy {
   private baseUrl = 'http://localhost:3000';
   private headers = new HttpHeaders({
     "Content-Type": "application/json",
@@ -18,6 +18,7 @@ export class NoteService {
   });
   private router;
   private token: string | null = null;
+  private destroy$ = new Subject<void>();
 
   private observedNotes = new BehaviorSubject<Note[]>([]);
   public notes$: Observable<Note[]> = this.observedNotes.asObservable().pipe(
@@ -31,17 +32,24 @@ export class NoteService {
 
   constructor(private http: HttpClient, private userService: UserService, router: Router) {
     this.router = router;
-    this.userService.token$.subscribe(token => {
-      this.token = token;
-      if (token) {
-        this.getNotes();
-        this.router.navigate(["notes"])
-      }
-      else {
-        this.router.navigate(["login"])
-        this.observedNotes.next([]);
-      }
-    })
+    this.userService.token$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(token => {
+        this.token = token;
+        if (token) {
+          this.getNotes();
+          this.router.navigate(["notes"])
+        }
+        else {
+          this.router.navigate(["login"])
+          this.observedNotes.next([]);
+        }
+      })
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setActiveNote(note: Note | null): void {
@@ -143,6 +151,7 @@ export class NoteService {
    */
   deleteNote(id: string): void {
     this.http.delete(`${this.baseUrl}/notes/${this.token}/${id}`, { headers: this.headers }).pipe(
+      retry(5),
       catchError((error: Error) => {
         console.error('Error deleting notes:', error.message);
         throw error; // Re-throw the error after logging it

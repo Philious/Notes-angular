@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { InputLayoutComponent } from '../components/action/input.layout.component';
@@ -120,6 +120,8 @@ export class LoginPage {
   passwordFieldState = InputState.Default;
   passwordFieldHelpText = '';
 
+  constructor(private userService: UserService) { };
+
   helpText = (errors: ValidationErrors | null): string => {
     const key = Object.keys(errors ?? [])?.[0];
     if (typeof key === 'string') {
@@ -130,8 +132,6 @@ export class LoginPage {
       }?.[key] ?? '';
     } else return ''
   }
-
-  userService = inject(UserService);
 
   profileForm = new FormGroup({
     email: new FormControl('conny@carneval.com', [Validators.required, Validators.email]),
@@ -153,7 +153,10 @@ export class LoginPage {
       if (this.pageState === PageState.Login) {
         this.userService.login(email, pass);
       } else if (this.pageState === PageState.NewUser) {
-        this.userService.createUser(email, pass)
+        this.userService.createUser(email, pass).subscribe({
+          next: (user) => this.userService.login(user.email, user.password),
+          error: (err: Error) => console.error('User creation failed:', err.message)
+        })
       } else {
         this.userService.updatePassword(email)
       }

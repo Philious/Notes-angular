@@ -26,6 +26,4 @@ import { NoteListComponent } from '../components/noteList.component';
     `
   ]
 })
-export class NotesPage {
-
-}
+export class NotesPage { }
