@@ -20,10 +20,10 @@ export enum PageState {
       <div class="title">{{title}}</div>
       <form class="form" [formGroup]="profileForm" (ngSubmit)="onSubmit()" [class]="pageState">
         <input-layout [inputId]="'email'" [label]="'Email'" class="email" [state]="emailFieldState" [helpText]="emailFieldHelpText"> 
-          <input id="email" type="text" formControlName="email" autocomplete="on" base-input />
+          <input id="email" type="text" formControlName="email" autocomplete="on" base-input input />
         </input-layout>
         <input-layout *ngIf="pageState != PageState.Forgot" [inputId]="'password'" [label]="'Password'"  class="password" [state]="passwordFieldState" [helpText]="passwordFieldHelpText"> 
-          <input id="password" type="text" formControlName="password" base-input />
+          <input id="password" type="text" formControlName="password" base-input input/>
         </input-layout>
         <icon-button [icon]="IconEnum.Right" [buttonStyle]="ButtonStyleEnum.Filled" [type]="'submit'" class="action-btn" />
       </form>

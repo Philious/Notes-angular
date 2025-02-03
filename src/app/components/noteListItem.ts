@@ -43,15 +43,22 @@ import { Note } from "../../helpers/types";
         transition: background-color .15s;
       }
       &:hover:after {
-        background-color: hsla(0,0%,100%,.1)
+        background-color: var(--hover-clr);
+      }
+      &:active:after {
+        background-color: var(--action-clr);
       }
     }
     .list-item-header {
+      color: var(--header-clr);
       font-size: var(--list-item-font-size);
       font-weight: 700;
+      @media (prefers-color-scheme: light) {
+        font-weight: 600;
+      }
     }
     .list-item-content {
-      color: hsl(0, 0%, 64%);
+      color: var(--para-clr);
       font-size: var(--list-item-font-size);
       font-weight: 500;
       line-height: var(--list-item-line-height);
@@ -67,7 +74,7 @@ import { Note } from "../../helpers/types";
         padding-left: .5rem;
         height: var(--list-item-line-height);
         width: 100%;
-        background: #000;
+        background: var(--bg-clr);
         transition: background-color .15s;
         top: calc(var(--list-item-line-height) * 3);
         right: 0;

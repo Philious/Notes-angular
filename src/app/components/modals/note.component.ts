@@ -13,6 +13,7 @@ import { ActiveNoteService } from "../../../services/activeNote.service";
         class="title"
         autofocus
         [(ngModel)]="title"
+        input
       />
     </div>
     <div class="date">
@@ -23,6 +24,7 @@ import { ActiveNoteService } from "../../../services/activeNote.service";
       <textarea
         class="text-area"
         [(ngModel)]="content"
+        input
       ></textarea>
     </div>
     <div class="toolbar">
@@ -50,7 +52,8 @@ import { ActiveNoteService } from "../../../services/activeNote.service";
   styles: `
   :host {
     grid-area: var(--note-area);
-    background-color: var(--black);
+    background-color: var(--bg);
+    color: var(--clr);
     position: fixed;
     inset: 0 0 0 var(--note-width);
     display: grid;
@@ -63,7 +66,7 @@ import { ActiveNoteService } from "../../../services/activeNote.service";
     align-items: center;
     padding: 0 .5rem;
     justify-content: space-between;
-    box-shadow: 0 -0.0625rem 0 var(--n-300);
+    border-top: 0.0625rem solid var(--border);
   }
   .toolbar-left-section,
   .toolbar-right-section {
@@ -98,8 +101,7 @@ import { ActiveNoteService } from "../../../services/activeNote.service";
       left: 1rem;
       right: 1rem;
       height: 0.0625rem;
-
-      background-color: var(--n-300);
+      background-color: var(--border);
     }
   }
   .text-area-container {

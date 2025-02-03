@@ -27,7 +27,6 @@ import { NgOptimizedImage } from '@angular/common';
   `,
   styles: `
     :host {
-      --shadow: drop-shadow(0 0 1px hsla(0, 0%, 0%, 1)) drop-shadow(0 1px 2px hsla(0, 0%, 0%, 1));
       box-sizing: border-box;
       grid-area: var(--day-area);
       height: var(--day-area-height);
@@ -35,29 +34,33 @@ import { NgOptimizedImage } from '@angular/common';
       padding: .5rem 1rem;
       place-content: end start;
       place-items: center start;
-      background-image: linear-gradient(180deg,hsla(0, 0%, 0%, 0) 75%, hsl(0, 0%, 0%));
       background-size: cover;
-      box-shadow: 0 6px 4px -4px #000, 0 12px 8px -8px #000, 0 18px 12px -12px #000, 1px 0 0 var(--n-300);
       color: #fff;
       position: sticky;
       inset: 0 0 auto 0;
       gap: .5rem;
       line-height: 1;
+      background-image: linear-gradient(180deg, #00000000 75%, #000 100%);
+      @media (prefers-color-scheme: light) {
+        background-image: linear-gradient(180deg, #FFFFFF00 80%, #FFF 100%);
+      }
+      box-shadow: 1px 0 var(--border);
     }
     .img {
       position: absolute;
       inset: 0;
       width: 0%;
       height: 0%;
-      mix-blend-mode: hard-light;
+      mix-blend-mode: color;
       object-fit: cover;
+      
       background: linear-gradient(rgb(170, 90, 125), rgb(253, 255, 217));
     }
     .text {
       position: relative;
       font-weight: 600;
       font-size: 1rem;
-      filter: var(--shadow);
+      filter: drop-shadow(0 0 1px hsla(0, 0%, 0%, 1)) drop-shadow(0 1px 2px hsla(0, 0%, 0%, 1));;
     }
     .date {
       text-transform: uppercase;

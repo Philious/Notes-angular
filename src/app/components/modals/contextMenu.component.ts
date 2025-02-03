@@ -61,7 +61,7 @@ import { getPosition } from "../../../helpers/utils";
       color: var(--overlay-clr);
       height: var(--menu-list-item-height);
       min-width: 12.5rem;
-      &:not(:last-child) { border-bottom: 0.0625rem solid var(--option-border); }
+      &:not(:last-child) { border-bottom: 0.0625rem solid var(--menu-border); }
       @include media.mobile {
         height: 3rem;
       }

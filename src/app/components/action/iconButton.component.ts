@@ -22,14 +22,28 @@ import { UserService } from "../../../services/user.service";
       margin: .125rem;
       border-radius: 50%;
       position: relative;
-      color: var(--icn-clr)
+      color: var(--icn-clr);
+      &:before {
+        content: "";
+        border-radius: 50%;
+        position: absolute;
+        inset: 0;
+        background-color: transparent;
+        transition: background-color .15s;
+      }
+      &:hover:before {
+        background-color: var(--hover-clr);
+      }
+      &:active:before {
+        background-color: var(--action-clr);
+      }
     }
     .filled {
-      background-color: var(--n-500);
+      background-color: var(--icn-bg-clr);
       color: var(--icn-clr-filled); 
     }
     .border {
-      border: 1px solid var(--n-300);
+      border: 1px solid var(--border);
     }
     .icn-btn {
       color: inherit;

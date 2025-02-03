@@ -50,7 +50,7 @@ import { Subject, takeUntil } from "rxjs";
       max-width: var(--note-list-width);
       max-height: 100%;
       overflow-y: auto;
-      box-shadow: 1px 0 0 var(--n-300);
+      box-shadow: 1px 0 0 var(--border);
       flex: 1;
       display: flex;
       @include media.tabletUp {
@@ -58,7 +58,7 @@ import { Subject, takeUntil } from "rxjs";
       }
     }
     .list-header {
-      background-color: var(--black);
+      background-color: var(--bg-clr);
       box-sizing: border-box;
       position: absolute;
       top: 0;
@@ -71,7 +71,7 @@ import { Subject, takeUntil } from "rxjs";
       width: 100%;
       height: var(--list-header-height);
       box-sizing: border-box;
-      border-bottom: 0.0625rem solid var(--n-400);
+      border-bottom: 0.0625rem solid var(--border);
     }
     .header {
       text-transform: uppercase;
@@ -82,11 +82,8 @@ import { Subject, takeUntil } from "rxjs";
       display: flex;
       gap: .5rem;
     }
-    .to-notes-btn {
-      gap: .125rem;
-    }
     .list {
-      background-color: var(--black);
+      background-color: var(--bg-clr);
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -100,13 +97,7 @@ import { Subject, takeUntil } from "rxjs";
     .list-item-container {
       scroll-snap-align: start;
       &:not(:last-child) {
-        box-shadow: 0 1px 0 var(--n-300);
-      }
-      &:active {
-        &,
-        .list-item-content:after {
-          background-color: var(--n-100);
-        }
+        box-shadow: 0 1px 0 var(--border);
       }
     }
   `

@@ -11,6 +11,10 @@
     inset: 0;
   }
 
+  :where([input]) {
+    color: var(--input-clr);
+  }
+
   :where([btn]) {
     position: relative;
     min-height: 2.5rem;
@@ -23,12 +27,13 @@
       inset: 0 -.25rem;
       position: absolute;
     }
+    &:hover { background-color: inherit; }
   }
 
   :where([text-btn]) {
     background-color: transparent;
     border: none;
-    color: var(--n-500);
+    color: var(--label);
     transition: filter .25s;
     @include m.tabletUp {
       &:hover {

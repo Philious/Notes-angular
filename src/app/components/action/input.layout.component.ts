@@ -29,7 +29,7 @@ import { IconComponent } from '../icons/icon.component';
     .input-container {
       display: grid;
       &:not(.disabled) .input-wrapper:hover {
-        border-color: var(--n-500);
+        border-color: var(--input-border);
       }
       &.error {
         .help-text { color: var(--error); }
@@ -38,9 +38,9 @@ import { IconComponent } from '../icons/icon.component';
         }
       }
       .input-wrapper {
-        background-color: var(--n-100);
-        border: 0.0625rem solid var(--n-300);
-        color: var(--n-500);
+        background-color: var(--input-bg-clr);
+        border: 0.0625rem solid var(-input-border);
+        color: var(--input-clr);
         border-radius: 0.125rem;
         height: 2.25rem;
         width: 100%;
@@ -53,7 +53,7 @@ import { IconComponent } from '../icons/icon.component';
       .label,
       .help-text {
         &:empty { display: none; }
-        color: var(--n-500);
+        color: var(--label);
         font-size: var(--txt-small);
         line-height: 1.2;
       }
