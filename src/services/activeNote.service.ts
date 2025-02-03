@@ -4,6 +4,7 @@ import { NoteComponent } from '../app/components/modals/note.component';
 import { NoteService } from './notes.service';
 import { DialogService } from './dialogService';
 import { newNote } from '../helpers/utils';
+import { UserService } from './user.service';
 
 @Injectable({ providedIn: 'root' })
 export class ActiveNoteService {
@@ -14,10 +15,19 @@ export class ActiveNoteService {
     private appRef: ApplicationRef,
     private environmentInjector: EnvironmentInjector,
     private noteService: NoteService,
-    private dialogService: DialogService
-  ) { }
+    private dialogService: DialogService,
+    private userService: UserService
+  ) {
+    this.userService.token$
+      .subscribe(token => {
+        if (!token) {
+          this.close();
+        }
+      })
+  }
 
   open(note?: Note): void {
+    if (this.activeNoteRef) this.close();
     if (note) { this.note = note; }
 
     const componentRef = createComponent(NoteComponent, {
@@ -93,7 +103,6 @@ export class ActiveNoteService {
       this.note = newNote();
       this.appRef.detachView(this.activeNoteRef.hostView);
       this.activeNoteRef.destroy();
-      this.activeNoteRef = null;
     }
   }
 }
