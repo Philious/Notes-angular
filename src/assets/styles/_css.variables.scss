@@ -52,19 +52,37 @@
   --overlay-bg-clr: var(--n-300);
   --overlay-shadow: 0 0 0 0.0625rem var(--n-400);
   
-  --option-border: var(--n-400);
+  --menu-border: var(--n-400);
+
+  --input-clr: var(--n-500);
+  --input-bg-clr: var(--n-100);
+  --input-border: var(--n-500);
 
   --btn-clr: var(--n-700);
   --btn-bg-clr: var(--n-100);
 
+  --label: --n-500;
+
   --icn-clr: var(--n-500);
   --icn-clr-filled: var(--n-100);
-
+  --icn-bg-clr: var(--n-500);
+  
+  --hover-clr: hsla(0,0%,100%,.1);
+/*
   @media (prefers-color-scheme: light) {
     --clr: var(--black);
-    --bg-clr: var(--n-600);
-  }
+    --bg-clr: var(--white);
 
+    --input-clr: var(--n-200);
+    --input-bg-clr: var(--n-600);
+    --input-border: var(--n-500);
+
+    --label: var(--n-400);
+
+    --icn-bg-clr: var(--n-600);
+    --hover-clr: hsla(0,0%,0%,.05);
+  }
+*/
   @include mix.tabletUp {
     --toolbar-height: 3rem;
     --main-tab-bar-height: 4rem;
