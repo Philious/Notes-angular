@@ -1,4 +1,3 @@
-import { trigger, state, style, transition, animate } from "@angular/animations";
 import { Note, Position } from "./types";
 
 export const sortNotes = (notes: Note[]): Note[] => {

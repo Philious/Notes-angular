@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { IconComponent } from "../icons/icon.component";
 
 @Component({
   selector: 'text-button',

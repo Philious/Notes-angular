@@ -1,10 +1,21 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, ObservableInput, of, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { catchError, retry, takeUntil } from 'rxjs/operators';
-import { LoginDetails } from '../helpers/types';
 import { deleteCookie, getCookie, setCookie } from '../helpers/utils';
 import { Router } from '@angular/router';
+
+type LoginDetails = {
+  email: string;
+  password: string;
+}
+
+type User = {
+  uuid: string,
+  createdAt: string,
+  email: string,
+  password: string,
+}
 
 @Injectable({
   providedIn: 'root',
@@ -56,7 +67,7 @@ export class UserService implements OnDestroy {
    * @returns User | null
    */
   createUser(email: string, password: string) {
-    return this.http.post<LoginDetails>(`${this.baseUrl}/users`, { email, password }, { headers: this.headers }).pipe(
+    return this.http.post<User>(`${this.baseUrl}/users`, { email, password }, { headers: this.headers }).pipe(
       retry(5),
       catchError((error) => {
         console.error('Error creating user:', error.message);

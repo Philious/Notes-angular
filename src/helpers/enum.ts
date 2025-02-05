@@ -1,21 +1,8 @@
-export enum InputType {
-  text = 'text',
-  search = 'search',
-  select = 'select'
-}
-
 export enum InputState {
   Default = 'default',
   Disabled = 'disabled',
   Ok = 'ok',
   Error = 'error'
-}
-
-export enum NetworkStatus {
-  IDLE = 'idle',
-  LOADING = 'loading',
-  SUCCSESS = 'succeeded',
-  FAILED = 'failed'
 }
 
 export enum ButtonStyleEnum {

@@ -2,10 +2,18 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { catchError, map, retry, takeUntil } from 'rxjs/operators';
-import { Note, NoteProps } from '../helpers/types';
+import { Note } from '../helpers/types';
 import { UserService } from './user.service';
 import { sortNotes } from '../helpers/utils';
 import { Router } from '@angular/router';
+
+type NoteProps = {
+  id?: string;
+  title: string,
+  content: string,
+  catalog: string,
+  tags: string[]
+}
 
 @Injectable({
   providedIn: 'root',

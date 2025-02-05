@@ -1,4 +1,3 @@
-/* eslint-disable no-undef, @typescript-eslint/no-require-imports */
 const express = require("express");
 const uuid = require("uuid");
 const cors = require("cors");
@@ -14,14 +13,13 @@ app.use(
   })
 );
 
-// Middleware to parse JSON bodies
 app.use(express.json());
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// Create user { user, password }
+// Create user # { user: string, password: string }: User
 app.post("/users", (req, res) => {
   const { email, password } = req.body;
   const emails = users.map((u) => u.email);
@@ -44,11 +42,16 @@ app.post("/users", (req, res) => {
   res.status(200).json(newUser);
 });
 
-// Login
+// Login # { user: string, password: string }: string
 app.get("/users/login/:email/:password", (req, res) => {
-  console.log("login");
+  const { email, password } = req.params;
+
+  if (!email || !password) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+
   const userIndex = users.findIndex(
-    (u) => u.email === req.params.email && u.password === req.params.password
+    (u) => u.email === email && u.password === password
   );
 
   if (userIndex >= 0) {
@@ -60,10 +63,11 @@ app.get("/users/login/:email/:password", (req, res) => {
   }
 });
 
-// Logout
+// Logout # { token: string }: boolean
 app.delete("/users/logout/:token", (req, res) => {
   console.log("logout");
-  const userIndex = users.findIndex((u) => u.token === req.params.token);
+  const token = req.params.token;
+  const userIndex = users.findIndex((u) => u.token === token);
 
   if (userIndex < 0) {
     return errorResponse(res, 500);
@@ -75,18 +79,20 @@ app.delete("/users/logout/:token", (req, res) => {
   res.clearCookie("notecookie");
 });
 
-/// Checktoken
+/// Check token # { token: string }: boolean
 app.get("/users/check/:token", (req, res) => {
   console.log("check token");
-  const user = users.find((u) => u.token === req.params.token);
+  const token = req.params.token;
+  const user = users.find((u) => u.token === token);
 
   res.status(200).json(!!user);
 });
 
-// Get all notes
+// Get all notes # { token: string }: Notes[]
 app.get("/notes/:token", (req, res) => {
   console.log("get all notes");
-  const userIndex = users.findIndex((u) => u.token === req.params.token);
+  const token = req.params.token;
+  const userIndex = users.findIndex((u) => u.token === token);
 
   if (userIndex < 0) {
     return res.status(404).json({ error: "No user with that token" });
@@ -98,11 +104,11 @@ app.get("/notes/:token", (req, res) => {
   res.status(200).json(userNotes);
 });
 
-// Get note
+// Get note # { token: string, noteId: string }: Note
 app.get("/notes/:token/:noteId", (req, res) => {
   console.log("get note");
-  const userIndex = users.findIndex((u) => u.token === req.params.token);
-  const noteId = req.params.noteId;
+  const { token, noteId } = req.params;
+  const userIndex = users.findIndex((u) => u.token === token);
 
   if (userIndex < 0) {
     return res.status(404).json({ error: "No user with that token" });
@@ -115,11 +121,12 @@ app.get("/notes/:token/:noteId", (req, res) => {
   res.status(200).json(note);
 });
 
-// Create a new note
+// Create a new note # { param: { token: string }, body: { note: Note } }: Note
 app.post("/notes/:token", (req, res) => {
   console.log("new note");
+  const token = req.params.token;
   const note = req.body;
-  const userIndex = users.findIndex((u) => u.token === req.params.token);
+  const userIndex = users.findIndex((u) => u.token === token);
 
   if (userIndex < 0) {
     return res.status(404).json({ error: "No user with that token" });
@@ -139,11 +146,13 @@ app.post("/notes/:token", (req, res) => {
   res.status(200).json(newNote);
 });
 
-// Update note # id: string, Partial<{ title: string, content: string, catalog: string, tags: string[] }>
+// Update note # { param: token, body: Partial<Note & { noteId: string}> }: void
 app.put("/notes/:token/", (req, res) => {
   console.log("update note");
+  const token = req.params.token;
   const note = req.body;
-  const userIndex = users.findIndex((u) => u.token === req.params.token);
+
+  const userIndex = users.findIndex((u) => u.token === token);
 
   if (userIndex < 0) {
     return res.status(404).json({ error: "No user with that token" });
@@ -164,24 +173,26 @@ app.put("/notes/:token/", (req, res) => {
   };
   notes[userId][noteIndex] = currentNote;
 
-  return res.status(200).json("");
+  return res.status(200).json();
 });
 
-// Delete an existing note # id string
+// Delete an existing note # { param: {id string } }: void
 app.delete("/notes/:token/:noteId", (req, res) => {
-  const userIndex = users.findIndex((u) => u.token === req.params.token);
+  const { token, noteId } = req.params;
+  const userIndex = users.findIndex((u) => u.token === token);
 
   if (userIndex < 0) {
     return res.status(404).json({ error: "No user with that token" });
   }
 
   const userId = users[userIndex].uuid;
-  const noteIndex = notes[userId].findIndex((n) => n.id === req.params.noteId);
+  const noteIndex = notes[userId].findIndex((n) => n.id === noteId);
 
   if (noteIndex < 0) {
     res.status(404).json({ error: "Note doesn't exist" });
   } else {
     notes[userId].splice(noteIndex, 1);
+    res.status(200).json();
   }
 });
 

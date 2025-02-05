@@ -41,10 +41,10 @@ import { NgOptimizedImage } from '@angular/common';
       gap: .5rem;
       line-height: 1;
       background-image: linear-gradient(180deg, #00000000 75%, #000 100%);
+      box-shadow: 1px 0 var(--border);
       @media (prefers-color-scheme: light) {
         background-image: linear-gradient(180deg, #FFFFFF00 80%, #FFF 100%);
       }
-      box-shadow: 1px 0 var(--border);
     }
     .img {
       position: absolute;

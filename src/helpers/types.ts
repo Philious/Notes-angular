@@ -10,19 +10,6 @@ export type Note = {
   updatedAt: string;
 };
 
-export type NoteProps = {
-  id?: string;
-  title: string,
-  content: string,
-  catalog: string,
-  tags: string[]
-}
-
-export type LoginDetails = {
-  email: string;
-  password: string;
-}
-
 export type actionButton = {
   id: string;
   label: string;
@@ -40,9 +27,3 @@ export type Position = {
   width: number,
   height: number
 }
-
-
-
-export type ComponentInputProps<T> = {
-  [K in keyof T]: T[K] extends Function ? never : K;
-}[keyof T];

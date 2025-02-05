@@ -1,8 +1,7 @@
-import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { IconComponent } from "../icons/icon.component";
 import { CommonModule } from "@angular/common";
 import { ButtonStyleEnum, IconEnum } from "../../../helpers/enum";
-import { UserService } from "../../../services/user.service";
 
 @Component({
   selector: 'icon-button',

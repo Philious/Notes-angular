@@ -8,7 +8,8 @@
     "start": "concurrently --names 'Backend,Frontend' \"npm run start:backend\" \"npm run start:frontend\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "check-typescript": "tsc --noEmit"
   },
   "private": true,
   "dependencies": {
