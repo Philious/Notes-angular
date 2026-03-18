@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgIf } from '@angular/common';
+
 import { FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { InputLayoutComponent } from '../components/action/input.layout.component';
 import { IconButtonComponent } from '../components/action/iconButton.component';
@@ -14,26 +14,34 @@ export enum PageState {
 
 @Component({
   selector: 'login',
-  imports: [InputLayoutComponent, IconButtonComponent, ReactiveFormsModule, NgIf],
+  imports: [InputLayoutComponent, IconButtonComponent, ReactiveFormsModule],
   template: `
     <div class="login-view">
       <div class="title">{{title}}</div>
       <form class="form" [formGroup]="profileForm" (ngSubmit)="onSubmit()" [class]="pageState">
-        <input-layout [inputId]="'email'" [label]="'Email'" class="email" [state]="emailFieldState" [helpText]="emailFieldHelpText"> 
-          <input id="email" type="text" formControlName="email" autocomplete="on" base-input input />
-        </input-layout>
-        <input-layout *ngIf="pageState != PageState.Forgot" [inputId]="'password'" [label]="'Password'"  class="password" [state]="passwordFieldState" [helpText]="passwordFieldHelpText"> 
-          <input id="password" type="text" formControlName="password" base-input input/>
-        </input-layout>
-        <icon-button [icon]="IconEnum.Right" [buttonStyle]="ButtonStyleEnum.Filled" [type]="'submit'" class="action-btn" />
-      </form>
-      <div class="buttons">
-        <button *ngIf="pageState != PageState.Login" class="vertical back" (click)="updateState(PageState.Login)" btn text-btn>Back</button>
-        <button *ngIf="pageState === PageState.Login" class="vertical new" (click)="updateState(PageState.NewUser)" btn text-btn>New User</button>
-        <button *ngIf="pageState === PageState.Login" class="vertical forgot" (click)="updateState(PageState.Forgot)" btn text-btn>Forgot\npassword</button>
-      </div>
+        <input-layout [inputId]="'email'" [label]="'Email'" class="email" [state]="emailFieldState" [helpText]="emailFieldHelpText">
+        <input id="email" type="text" formControlName="email" autocomplete="on" base-input input />
+      </input-layout>
+      @if (pageState != PageState.Forgot) {
+        <input-layout [inputId]="'password'" [label]="'Password'"  class="password" [state]="passwordFieldState" [helpText]="passwordFieldHelpText">
+        <input id="password" type="text" formControlName="password" base-input input/>
+      </input-layout>
+    }
+    <icon-button [icon]="IconEnum.Right" [buttonStyle]="ButtonStyleEnum.Filled" [type]="'submit'" class="action-btn" />
+    </form>
+    <div class="buttons">
+      @if (pageState != PageState.Login) {
+        <button class="vertical back" (click)="updateState(PageState.Login)" btn text-btn>Back</button>
+      }
+      @if (pageState === PageState.Login) {
+        <button class="vertical new" (click)="updateState(PageState.NewUser)" btn text-btn>New User</button>
+      }
+      @if (pageState === PageState.Login) {
+        <button class="vertical forgot" (click)="updateState(PageState.Forgot)" btn text-btn>Forgot\npassword</button>
+      }
     </div>
-  `,
+    </div>
+    `,
   styles: `
     .login-view {
       box-sizing: border-box;
