@@ -7,9 +7,9 @@ import { ButtonStyleEnum, IconEnum } from "../../../helpers/enum";
   selector: 'icon-button',
   imports: [IconComponent, CommonModule],
   template: `
-    <div [ngClass]="['bg', buttonStyle]">
+    <div [class]="['bg', buttonStyle]">
       <button class="icn-btn" (click)="onButtonClick($event)" [type]="type" base-input>
-        <icon [icon]="icon" class="icn" [ngStyle]="{color: color}"/>
+        <icon [icon]="icon" class="icn" [style]="{ color }"/>
       </button>
     </div>
     
@@ -61,7 +61,7 @@ export class IconButtonComponent {
   @Input() type = 'button';
   @Input() icon!: IconEnum;
   @Input() buttonStyle = ButtonStyleEnum.Transparent;
-  @Input() color: string = 'var(--icon)';
+  @Input() color = 'var(--icon)';
 
   @Output() onClick = new EventEmitter<MouseEvent>();
 

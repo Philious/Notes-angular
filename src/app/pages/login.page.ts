@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 
 import { FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { InputLayoutComponent } from '../components/action/input.layout.component';
-import { IconButtonComponent } from '../components/action/iconButton.component';
+import { InputLayoutComponent } from '../components/action/input-layout.component';
+import { IconButtonComponent } from '../components/action/icon-button.component';
 import { ButtonStyleEnum, IconEnum, InputState } from '../../helpers/enum';
 import { UserService } from '../../services/user.service';
 

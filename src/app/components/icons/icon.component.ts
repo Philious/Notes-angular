@@ -1,18 +1,18 @@
-import { Component, Input, ViewContainerRef, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Type, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconEnum } from '../../../helpers/enum';
-import { AddIconComponent } from './add.icon.component';
-import { ArrowLeftIconComponent } from './arrowLeft.icon.component';
-import { CheckIconComponent } from './check.icon.component';
-import { LetterSizeIconComponent } from './LetterSize.icon.component';
-import { ListIconComponent } from './List.icon.component';
-import { LogoutIconComponent } from './logout.icon.component';
-import { OptionsIconComponent } from './options.icon.component';
-import { RemoveIconComponent } from './remove.icon.component';
-import { SettingsIconComponent } from './settings.icon.component';
-import { ArrowRightIconComponent } from './arrowRight.icon.component';
-import { ArrowUpIconComponent } from './arrowUp.icon.component';
-import { ArrowDownIconComponent } from './arrowDown.icon.component';
+import { AddIconComponent } from './add.component';
+import { ArrowLeftIconComponent } from './arrow-left.component';
+import { CheckIconComponent } from './check.component';
+import { LetterSizeIconComponent } from './letter-size.component';
+import { ListIconComponent } from './list.component';
+import { LogoutIconComponent } from './logout.component';
+import { OptionsIconComponent } from './options.component';
+import { RemoveIconComponent } from './remove.component';
+import { SettingsIconComponent } from './settings.component';
+import { ArrowRightIconComponent } from './arrow-right.component';
+import { ArrowUpIconComponent } from './arrow-up.component';
+import { ArrowDownIconComponent } from './arrow-down.component';
 
 @Component({
   selector: 'icon',
@@ -34,7 +34,7 @@ import { ArrowDownIconComponent } from './arrowDown.icon.component';
 export class IconComponent {
   @Input() icon!: IconEnum;
   // Map the enum to the corresponding icon components
-  private readonly icons: Record<IconEnum, any> = {
+  private readonly icons: Record<IconEnum, Type<unknown>> = {
     [IconEnum.Add]: AddIconComponent,
     [IconEnum.Down]: ArrowDownIconComponent,
     [IconEnum.Cancel]: RemoveIconComponent,

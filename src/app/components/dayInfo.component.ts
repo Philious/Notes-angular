@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { IconButtonComponent } from "./action/iconButton.component";
+import { IconButtonComponent } from "./action/icon-button.component";
 import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
 import { UserService } from "../../services/user.service";
 import { NgOptimizedImage } from '@angular/common';

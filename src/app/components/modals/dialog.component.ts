@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { actionButton } from '../../../helpers/types';
-import { TextButton } from '../action/textButton.component';
+import { TextButton } from '../action/text-button.component';
 
 
 @Component({

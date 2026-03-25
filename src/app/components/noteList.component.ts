@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, Renderer2, ViewChild } from "@angular/core";
-import { IconButtonComponent } from "./action/iconButton.component";
+import { IconButtonComponent } from "./action/icon-button.component";
 import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
-import { ListItem } from "./noteListItem";
+import { ListItem } from "./noteListItem.component";
 import { NoteService } from "../../services/notes.service";
 import { Note } from "../../helpers/types";
 import { ContextMenuService } from "../../services/contextMenu.service";

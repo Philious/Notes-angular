@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { IconButtonComponent } from "../action/iconButton.component";
+import { IconButtonComponent } from "../action/icon-button.component";
 import { ButtonStyleEnum, IconEnum } from "../../../helpers/enum";
 import { FormsModule } from "@angular/forms";
 import { ActiveNoteService } from "../../../services/activeNote.service";
