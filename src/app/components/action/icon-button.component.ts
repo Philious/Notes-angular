@@ -6,14 +6,13 @@ import { IconEnum } from '../../../helpers/enum';
 @Component({
   selector: 'icn-btn',
   imports: [IconComponent, CommonModule],
-  host: {
-    role: 'button',
-  },
   template: `
-    <icon class="icn" [icon]="icon()" />
+    <button class="btn" (click)="update.emit()">
+      <icon class="icn" [icon]="icon()" />
+    </button>
   `,
   styles: `
-    :host {
+    .btn {
       background-color: transparent;
       border: none;
       padding: 0;
@@ -25,32 +24,31 @@ import { IconEnum } from '../../../helpers/enum';
       display: grid;
       place-content: center;
       cursor: pointer;
+      transition-property: border-color, background-color;
+      transition: 0.15s;
       &:before {
         content: '';
         border-radius: 50%;
         position: absolute;
-        inset: 0;
+        inset: -0.375rem;
         background-color: transparent;
         transition: background-color 0.15s;
-      }
-      &:hover:before {
-        background-color: var(--hover-clr);
-      }
-      &:active:before {
-        background-color: var(--action-clr);
       }
       .icn {
         color: currentColor;
       }
     }
-    :host-context(.fill) {
+    :host-context(.fill) .btn {
       background-color: var(--icn-bg-clr);
       color: var(--icn-clr-filled);
+      &:hover {
+        background-color: color-mix(in hsl, var(--icn-bg-clr), #fff 16%);
+      }
     }
-    :host-context(.stroke) {
+    :host-context(.stroke) .btn {
       border: 1px solid var(--border);
     }
-    :host-context(.icn-btn) {
+    :host-context(.btn) {
       color: inherit;
       cursor: pointer;
       display: grid;
@@ -62,5 +60,5 @@ export class IconButtonComponent {
   readonly icon = input.required<IconEnum>();
   readonly color = input('var(--icon)');
 
-  readonly update = output<MouseEvent>();
+  readonly update = output<void>();
 }

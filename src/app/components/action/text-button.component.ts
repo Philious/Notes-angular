@@ -1,4 +1,4 @@
-import { Component, input, output } from "@angular/core";
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'text-button',
@@ -9,7 +9,9 @@ import { Component, input, output } from "@angular/core";
   `,
   styles: `
     @use 'media-size.mixins' as media;
-    :host { display: contents; }
+    :host {
+      display: contents;
+    }
     .btn {
       height: 2rem;
       padding: 0 1rem;
@@ -21,21 +23,21 @@ import { Component, input, output } from "@angular/core";
       position: relative;
       box-sizing: border-box;
       &:after {
-        content: "";
+        content: '';
         position: absolute;
-        inset: -.25rem 0;
+        inset: -0.25rem 0;
       }
       @include media.mobile {
         height: 2.5rem;
       }
     }
-  `
+  `,
 })
 export class TextButton {
   readonly label = input<string>('');
   readonly onClick = output<Event>();
 
   onClickButton(event: Event) {
-    this.onClick.emit(event)
+    this.onClick.emit(event);
   }
 }

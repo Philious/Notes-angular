@@ -24,7 +24,7 @@ import { ListItem } from './noteListItem.component';
         <context-menu [options]="letterSizeMenu">
           <icon [icon]="IconEnum.LetterSize" />
         </context-menu>
-        <icn-btn [icon]="IconEnum.Add" (click)="newNote.emit()" />
+        <icn-btn [icon]="IconEnum.Add" (update)="newNote.emit()" />
       </div>
     </div>
   `,

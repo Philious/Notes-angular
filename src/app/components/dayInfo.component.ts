@@ -22,7 +22,7 @@ import { IconButtonComponent } from './action/icon-button.component';
     <div class="text date">
       {{ date }}
     </div>
-    <icn-btn class="logout" [icon]="IconEnum.LogOut" (click)="onLogout()" />
+    <icn-btn class="logout" [icon]="IconEnum.LogOut" (update)="onLogout()" />
   `,
   styles: `
     :host {

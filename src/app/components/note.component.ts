@@ -23,11 +23,11 @@ import { formatDate } from '../../helpers/utils';
     </div>
     <div class="toolbar">
       <div class="toolbar-left-section">
-        <icn-btn [icon]="IconEnum.Left" (click)="cancelNote.emit()" />
-        <icn-btn [icon]="IconEnum.Check" (click)="saveNoteMapper()" />
+        <icn-btn [icon]="IconEnum.Left" (update)="cancelNote.emit()" />
+        <icn-btn [icon]="IconEnum.Check" (update)="saveNoteMapper()" />
       </div>
       <div class="toolbar-right-section">
-        <icn-btn [icon]="IconEnum.Remove" (click)="removeNote.emit(note().id ?? null)" />
+        <icn-btn [icon]="IconEnum.Remove" (update)="removeNote.emit(note().id ?? null)" />
       </div>
     </div>
   `,
