@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { actionButton } from '../../../helpers/types';
 import { TextButton } from '../action/text-button.component';
 
@@ -7,21 +7,20 @@ import { TextButton } from '../action/text-button.component';
   selector: 'app-dialog',
   imports: [TextButton],
   template: `
-    <button class="dialog-backdrop" (click)="onClose()"></button>
     <div class="dialog-box">
-      @if (title) {
+      @if (title()) {
         <div class="title">
-          {{ title }}
+          {{ title() }}
         </div>
       }
-      @if (content) {
+      @if (content()) {
         <div class="content">
-          {{ content }}
+          {{ content() }}
         </div>
       }
       <div class="action-btns">
-        @for (button of actionButtons; track button.id) {
-          <text-button [label]="button.label" (onClick)="button.action()"/>
+        @for (button of actionButtons(); track button.id) {
+          <text-button [label]="button.label" (click)="button.action()"/>
         }
       </div>
     </div>
@@ -80,12 +79,12 @@ import { TextButton } from '../action/text-button.component';
 })
 
 export class DialogComponent {
-  @Input() title?: string;
-  @Input() content?: string;
-  @Input() actionButtons: actionButton[] = []
-  @Output() close = new EventEmitter<void>();
+  readonly title = input<string>();
+  readonly content = input<string>();
+  readonly actionButtons = input<actionButton[]>([]);
+  readonly closeDialog = output<void>();
 
   onClose(): void {
-    this.close.emit();
+    this.closeDialog.emit();
   }
 }

@@ -1,44 +1,30 @@
-import { Component, ElementRef, OnDestroy, Renderer2, ViewChild } from "@angular/core";
-import { IconButtonComponent } from "./action/icon-button.component";
-import { ButtonStyleEnum, IconEnum } from "../../helpers/enum";
-import { ListItem } from "./noteListItem.component";
-import { NoteService } from "../../services/notes.service";
-import { Note } from "../../helpers/types";
-import { ContextMenuService } from "../../services/contextMenu.service";
-import { ActiveNoteService } from "../../services/activeNote.service";
-import { Subject, takeUntil } from "rxjs";
+import { Component, inject, input, output, Renderer2 } from '@angular/core';
+import { ButtonStyleEnum, IconEnum } from '../../helpers/enum';
+import { Note } from '../../helpers/types';
+import { ContextMenuComponent } from './action/context-menu.component';
+import { IconButtonComponent } from './action/icon-button.component';
+import { IconComponent } from './icons/icon.component';
+import { ListItem } from './noteListItem.component';
 
 @Component({
   selector: 'note-list',
-  imports: [IconButtonComponent, ListItem],
+  imports: [ListItem, ContextMenuComponent, IconButtonComponent, IconComponent],
   template: `
-    
-    @if (notes.length) { 
-      <ul class="list">
-        @for (note of notes; track note.id) {
-          @if (note.updatedAt) { 
-          <li class="list-item-container">
-            <list-item [note]="note" (onClick)="activeNoteService.open(note)" />
-          </li>
-          }
-        }
-      </ul>
-    }
-
+    {{ notes().length }}
+    <ul class="list">
+      @for (note of notes(); track note.id) {
+        <li class="list-item-container">
+          <list-item [note]="note" (click)="selectNote.emit(note.id)" />
+        </li>
+      }
+    </ul>
     <div class="list-header">
-      <label class="header">Notes</label>
-      <div class="list-options" >
-      <icon-button 
-        #letterSizeButton
-        [icon]="IconEnum.LetterSize"
-        [buttonStyle]="ButtonStyleEnum.Border"
-        (click)="letterSizeMenu()"
-      ></icon-button>
-        <icon-button
-          [icon]="IconEnum.Add"
-          [buttonStyle]="ButtonStyleEnum.Border"
-          (onClick)="activeNoteService.open()"
-        />
+      <div class="header">Notes</div>
+      <div class="list-options">
+        <context-menu [options]="letterSizeMenu">
+          <icon [icon]="IconEnum.LetterSize" />
+        </context-menu>
+        <icn-btn [icon]="IconEnum.Add" (click)="newNote.emit()" />
       </div>
     </div>
   `,
@@ -65,8 +51,8 @@ import { Subject, takeUntil } from "rxjs";
       align-items: center;
       display: flex;
       place-self: center start;
-      gap: .5rem;
-      padding: 0 .5rem 0 1rem;
+      gap: 0.5rem;
+      padding: 0 0.5rem 0 1rem;
       justify-content: space-between;
       width: 100%;
       height: var(--list-header-height);
@@ -75,12 +61,12 @@ import { Subject, takeUntil } from "rxjs";
     }
     .header {
       text-transform: uppercase;
-      font-size: .75rem;
+      font-size: 0.75rem;
       font-weight: 700;
     }
     .list-options {
       display: flex;
-      gap: .5rem;
+      gap: 0.5rem;
     }
     .list {
       background-color: var(--bg-clr);
@@ -88,7 +74,7 @@ import { Subject, takeUntil } from "rxjs";
       flex-direction: column;
       flex: 1;
       overflow-x: hidden;
-      overflow-y:auto;
+      overflow-y: auto;
       list-style: none;
       padding: 0 0 3rem 0;
       margin: 3rem 0 0 0;
@@ -100,55 +86,26 @@ import { Subject, takeUntil } from "rxjs";
         box-shadow: 0 1px 0 var(--border);
       }
     }
-  `
+  `,
 })
+export class NoteListComponent {
+  protected readonly IconEnum = IconEnum;
+  protected readonly ButtonStyleEnum = ButtonStyleEnum;
 
-export class NoteListComponent implements OnDestroy {
-  @ViewChild('letterSizeButton', { static: false, read: ElementRef }) private letterSizeBtn!: ElementRef;
-  private destroy$ = new Subject<void>();
+  private renderer = inject(Renderer2);
 
-  IconEnum = IconEnum;
-  ButtonStyleEnum = ButtonStyleEnum;
+  notes = input<Note[]>([]);
 
-  notes: Note[] = [];
-  showActiveNote = false;
-
-  constructor(
-    noteService: NoteService,
-    public activeNoteService: ActiveNoteService,
-    private menuService: ContextMenuService,
-    private renderer: Renderer2,
-  ) {
-    noteService.activeNote$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(active => {
-        this.showActiveNote = !!active
-      });
-    noteService.notes$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(notes => {
-        this.notes = notes
-      })
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  selectNote = output<string>();
+  newNote = output<void>();
 
   updateAppFontSize(size: number) {
     this.renderer.setProperty(document.documentElement, 'style', `--app-font-size: ${size}px`);
-    this.menuService.close()
   }
 
-  letterSizeMenu(): void {
-    if (this.letterSizeBtn?.nativeElement) {
-      this.menuService.open([
-        { id: 'id1', label: 'Large', action: () => this.updateAppFontSize(22) },
-        { id: 'id2', label: 'Normal', action: () => this.updateAppFontSize(16) },
-        { id: 'id3', label: 'Small', action: () => this.updateAppFontSize(12) }
-      ], this.letterSizeBtn.nativeElement)
-    }
-  }
-
+  protected letterSizeMenu = [
+    { id: 'id1', label: 'Large', action: () => this.updateAppFontSize(22) },
+    { id: 'id2', label: 'Normal', action: () => this.updateAppFontSize(16) },
+    { id: 'id3', label: 'Small', action: () => this.updateAppFontSize(12) },
+  ];
 }

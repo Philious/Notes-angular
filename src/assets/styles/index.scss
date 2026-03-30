@@ -26,5 +26,7 @@ body {
 }
 
 input, button, textarea {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  outline-color: var(--p-60d);
+  box-shadow: 0 0 0 1px transparent inset, 0 0 0 1px transparent;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;    
 }

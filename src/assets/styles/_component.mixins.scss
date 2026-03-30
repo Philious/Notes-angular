@@ -4,15 +4,19 @@
 //Components
 @mixin components {
   :where([base-input]) {
+    /*
     border: none;
     background: transparent;
     padding: 0;
     position: absolute;
     inset: 0;
+    */
   }
 
   :where([input]) {
+    /*
     color: var(--input-clr);
+    */
   }
 
   :where([btn]) {

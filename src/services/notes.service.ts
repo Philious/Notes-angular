@@ -1,174 +1,115 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, effect, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { catchError, map, retry, takeUntil } from 'rxjs/operators';
 import { Note } from '../helpers/types';
-import { UserService } from './user.service';
-import { sortNotes } from '../helpers/utils';
-import { Router } from '@angular/router';
+import { ApiService } from './api.service';
+import { take } from 'rxjs';
 
 type NoteProps = {
   id?: string;
-  title: string,
-  content: string,
-  catalog: string,
-  tags: string[]
-}
+  title: string;
+  content: string;
+  catalog: string;
+  tags: string[];
+};
 
-@Injectable({
-  providedIn: 'root',
-})
-export class NoteService implements OnDestroy {
-  private baseUrl = 'http://localhost:3000';
-  private headers = new HttpHeaders({
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-  });
-  private router;
-  private token: string | null = null;
-  private destroy$ = new Subject<void>();
+@Injectable()
+export class NoteService {
+  private http = inject(HttpClient);
+  private apiService = inject(ApiService);
 
-  private observedNotes = new BehaviorSubject<Note[]>([]);
-  public notes$: Observable<Note[]> = this.observedNotes.asObservable().pipe(
-    map(notes => {
-      return sortNotes(notes)
-    })
-  );
-
-  private observedActiveNote = new BehaviorSubject<Note | null>(null);
-  public activeNote$ = this.observedActiveNote.asObservable();
-
-  constructor(private http: HttpClient, private userService: UserService, router: Router) {
-    this.router = router;
-    this.userService.token$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(token => {
-        this.token = token;
-        if (token) {
-          this.getNotes();
-          this.router.navigate(["notes"])
-        }
-        else {
-          this.router.navigate(["login"])
-          this.observedNotes.next([]);
-        }
-      })
+  private getAuthHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'Content-Type': 'application/json',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Accept: 'application/json',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Authorization: `Bearer ${this.apiService.token()}`,
+    });
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  private baseUrl = 'http://localhost:3000/notes';
+
+  private _notes = signal<Note[]>([]);
+  notes = this._notes.asReadonly();
+  activeNote = signal<Note | null>(null);
+
+  constructor() {
+    const subscriber = effect(() => {
+      if (this.apiService.token()) {
+        this.getAllNotes();
+        subscriber.destroy();
+      }
+    });
   }
 
   setActiveNote(note: Note | null): void {
-    this.observedActiveNote.next(note);
+    this.activeNote.set(note);
   }
 
-  /**
-   * Empty Note object.
-   * @returns Note
-   */
-  newNote(): Note {
-    const date = new Date().toDateString();
+  newNote(note?: Partial<Note>): Note {
+    const date = new Date();
+
     return {
       id: '',
       title: '',
       content: '',
-      catalog: '',
-      tags: [],
       createdAt: date,
-      updatedAt: date
-    }
+      updatedAt: date,
+      ...note,
+    };
   }
 
-  /**
-   * Retrive all stored notes.
-   * @returns void
-   */
-  getNotes(): void {
-    this.http.get<Note[]>(`${this.baseUrl}/notes/${this.token}`, { headers: this.headers }).pipe(
-      retry(5),
-      map(body => (body ?? []) as Note[]),
-      catchError((error: Error) => {
-        console.error('Error fetching notes:', error.message);
-        throw error;
-      })
-    ).subscribe(notes => {
-      this.observedNotes.next(notes);
+  getAllNotes(): void {
+    this.http
+      .get<Note[]>(`${this.baseUrl}/all`, { headers: this.getAuthHeaders() })
+      .pipe(take(1))
+      .subscribe((notes) => {
+        const mappedNotes = notes.map((n) => ({
+          ...n,
+          updatedAt: new Date(n.updatedAt),
+          createdAt: new Date(n.createdAt),
+        }));
+        this._notes.set(mappedNotes);
+      });
+  }
+
+  getNote(noteId: string): Promise<Note> {
+    return new Promise<Note>((resolve) => {
+      this.http
+        .get<Note>(`${this.baseUrl}/${noteId}`, { headers: this.getAuthHeaders() })
+        .subscribe((note) => {
+          resolve(note);
+        });
     });
   }
 
-  /**
- * Retrive all stored notes.
- * @returns void
- */
-  getNote(noteId: string): void {
-    this.http.get<Note>(`${this.baseUrl}/notes/${this.token}/${noteId}`, { headers: this.headers }).pipe(
-      retry(5),
-      catchError((error: Error) => {
-        throw error;
-      })
-    ).subscribe(note => {
-      const notes = [...this.observedNotes.getValue()];
-      const index = notes.findIndex(n => n.id === noteId);
-      notes[index] = note;
-      this.observedNotes.next(notes);
-    });
+  addNote(note: Partial<Note>): void {
+    this.http
+      .post<Note>(`${this.baseUrl}`, note, { headers: this.getAuthHeaders() })
+      .subscribe((note) => {
+        this._notes.update((n) => {
+          n.push(note);
+          return n;
+        });
+      });
   }
 
-  /**
-   * Add new note.
-   * @param note Note
-   * @returns void
-   */
-  addNote(note: NoteProps): void {
-    this.http.post<Note>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
-      retry(5),
-      catchError((error: Error) => {
-        console.error('Error adding note:', error.message);
-        throw error;
-      })
-    ).subscribe(note => {
-      const notes = [...this.observedNotes.getValue()];
-      notes.push(note);
-      this.observedNotes.next(notes);
-    });
+  updateNote(partialNote: Partial<NoteProps> & { id: string }): void {
+    this.http
+      .put<Note>(`${this.baseUrl}`, partialNote, { headers: this.getAuthHeaders() })
+      .subscribe((note) => {
+        this._notes.update((notes) => {
+          return notes.map((n) => (n.id === note.id ? note : n));
+        });
+      });
   }
 
-  /**
-   * Update currently active note.
-   * @param note Note
-   * @returns void
-   */
-  updateNote(note: Partial<NoteProps> & { id: string }): void {
-    this.http.put<void>(`${this.baseUrl}/notes/${this.token}`, note, { headers: this.headers }).pipe(
-      retry(5),
-      catchError((error: Error) => {
-        console.error('Error updating note:', error.message);
-        throw error; // Re-throw the error after logging it
-      })
-    ).subscribe(_ => {
-      this.getNote(note.id)
-    });
-  }
-
-  /**
-   * Fetch a single note by ID.
-   * @param note Note ID
-   * @returns void
-   */
   deleteNote(id: string): void {
-    this.http.delete(`${this.baseUrl}/notes/${this.token}/${id}`, { headers: this.headers }).pipe(
-      retry(5),
-      catchError((error: Error) => {
-        console.error('Error deleting notes:', error.message);
-        throw error; // Re-throw the error after logging it
-      })
-    ).subscribe(_ => {
-      const notes = [...this.observedNotes.getValue()];
-      const index = notes.findIndex(n => n.id === id);
-      notes.splice(index, 1);
-      this.observedNotes.next(notes);
+    this.http.delete(`${this.baseUrl}/${id}`, { headers: this.getAuthHeaders() }).subscribe(() => {
+      this._notes.update((n) => {
+        return n.filter((note) => note.id !== id);
+      });
     });
   }
 }

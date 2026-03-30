@@ -1,42 +1,44 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, input } from '@angular/core';
 import { IconEnum, InputState } from '../../../helpers/enum';
 import { IconComponent } from '../icons/icon.component';
+
+let inputId = 0
 
 @Component({
   selector: 'input-layout',
   imports: [IconComponent],
+  host: {
+    '[class]': '["type", { "pre-icon": preIcon(), "post-icon": postIcon() }, state()]'
+  },
   template: `
-  <div class="input-container" [class]="['type', {'pre-icon': preIcon, 'post-icon': postIcon}, state]">
-    <label class="label" [for]="inputId" >{{ label }}</label>
-    <div class="input-wrapper">
-      @if (preIcon) {
-        <icon [icon]="preIcon"/>
+    @if (label()) {
+    <label class="label" [for]="inputId()" >{{ label() }}</label>
+      @if (preIcon()) {
+        <icon class="prefix-icon" [icon]="preIcon()"/>
       }
       <ng-content />
-      @if (postIcon) {
-        <icon [icon]="postIcon"/>
+      @if (postIcon()) {
+        <icon class="sufix-icon" [icon]="postIcon()"/>
       }
-    </div>
-    @if (helpText) {
-      <div class="help-text">{{(helpText)}}</div>
+    @if (helpText()) {
+      <div class="context-help">{{(helpText())}}</div>
     }
-  </div>
+  }
   `,
   styles: `
-    :where(input-layout) {
+    :where(:host) {
       width:100%;
-    }
-    .input-container {
       display: grid;
+      grid-template-rows: auto 2.25rem auto;
+      grid-template-columns: 2.25rem 1fr 2.25rem;
       &:not(.disabled) .input-wrapper:hover {
         border-color: var(--input-border);
       }
-      &.error {
-        .help-text { color: var(--error); }
-        .input-wrapper {
-          border-color: var(--error);
-        }
-      }
+      .label { grid-area: 1 / 1 / 2 / 4 }
+      .prefix-icon { grid-area: 2 / 1 / 3 / 2 }
+      .sufix-icon { grid-area: 2 / 3 / 3 / 4 }
+      .context-help { grid-area: 3 / 1 / 4 / 4 }
+
       .input-wrapper {
         background-color: var(--input-bg-clr);
         border: 0.0625rem solid var(-input-border);
@@ -51,32 +53,51 @@ import { IconComponent } from '../icons/icon.component';
         transition: border-color .15s;
       }
       .label,
-      .help-text {
+      .context-help {
         &:empty { display: none; }
         color: var(--label);
         font-size: var(--txt-small);
         line-height: 1.2;
       }
-      input {
-        position: absolute;
-        inset: 0;
-        padding: 0 1rem;
-      }
+
       &.pre-icon { padding-left: 2.5rem; }
       &.post-icon { padding-right: 2.5rem; }
     }
+    :host ::ng-deep input {
+      grid-area: 2 / 1 / 3 / 4 ;
+      border: 1px solid var(--input-border-clr);
+      color: var(--input-clr);
+      border-radius: 0.125rem;
+      background-color: var(--input-bg-clr);
+      transition-property: background-color, border-color;
+      transition: .15s, ;
+      &:hover {
+        border-color: color-mix(in hsl, var(--input-border-clr) 90%, #fff 10%);
+      }
+      &[disabled] { opacity: .6; }
+      padding: 0 1rem;
+    }
+    :host.error ::ng-deep {
+      input { border: 1px solid var(--error) };
+      .label,
+      .context-help {
+        color: var(--error);
+      }
+    }
   `,
-  encapsulation: ViewEncapsulation.None
 })
 
 export class InputLayoutComponent {
   InputState = InputState;
-  @Input() inputId!: string;
-  @Input() type: string = 'text';
-  @Input() state = InputState.Default;
-  @Input() helpText: string = '';
-  @Input() label?: string;
-  @Input() preIcon?: IconEnum;
-  @Input() postIcon?: IconEnum;
+  readonly inputId = input<string>(`input-id${++inputId}`);
+  readonly type = input<string>('text');
+  readonly state = input(InputState.Default);
+  
+  readonly preIcon = input<IconEnum>();
+  readonly postIcon = input<IconEnum>();
+
+  readonly helpText = input<string>();
+  readonly label = input<string>();
+  
 
 }

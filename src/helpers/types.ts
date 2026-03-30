@@ -1,29 +1,41 @@
-import { IconEnum } from "./enum";
+import { IconEnum } from './enum';
 
-export type Note = {
-  id: string;
+export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+export type NoteProps = {
+  id?: string;
   title: string;
   content: string;
-  catalog: string;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
-export type actionButton = {
+export type Note = Expand<
+  NoteProps & {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }
+>;
+
+export type ActionButton = {
   id: string;
   label: string;
   action: () => void;
-  keepOpenOnClick?: boolean;
-}
+};
 
-export type Option = actionButton & { icon?: IconEnum; }
+export type Option = {
+  id: string;
+  label: string;
+  action: () => void;
+  icon?: IconEnum;
+};
 
 export type Position = {
-  top: number,
-  right: number,
-  bottom: number,
-  left: number,
-  width: number,
-  height: number
-}
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+  width: number;
+  height: number;
+};

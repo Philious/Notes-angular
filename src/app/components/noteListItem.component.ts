@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, OnInit, input, output } from "@angular/core";
 import { Note } from "../../helpers/types";
 
 @Component({
@@ -6,14 +6,14 @@ import { Note } from "../../helpers/types";
   template: `
     <button
       class="list-item"
-      (click)="selectNote()"
+      (click)="activeNote.emit()"
       base-input
     >
       <div class="list-item-header">
-        {{ note.title }}
+        {{ note().title }}
       </div>
       <div class="list-item-content">
-        {{ note.content }}
+        {{ note().content }}
       </div>
       <div class="list-item-date">
         Updated: {{ updatedAt }}
@@ -92,17 +92,14 @@ import { Note } from "../../helpers/types";
 
 export class ListItem implements OnInit {
   updatedAt: string = ''
-  @Input() note!: Note;
-  @Output() onClick = new EventEmitter<Note>();
+  readonly note = input.required<Note>();
+  readonly activeNote = output();
 
   ngOnInit(): void {
-    this.updatedAt = new Date(this.note.updatedAt).toLocaleDateString(
+    this.updatedAt = new Date(this.note().updatedAt).toLocaleDateString(
       'sv-se',
       { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
     )
   }
 
-  selectNote = () => {
-    this.onClick.emit(this.note);
-  }
 };

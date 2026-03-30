@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
-import { LoginPage } from './pages/login.page';
-import { NotesPage } from './pages/notes.page';
+import { LoginPageComponent } from './pages/login.page';
+import { NotesPageComponent } from './pages/notes.page';
+import { authGuard } from '../guards/auth.guard';
+import { NoteService } from '../services/notes.service';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginPage },
-  { path: 'notes', component: NotesPage },
+  { path: 'login', title: 'Login', component: LoginPageComponent },
+  { path: 'notes', title: 'Notes', component: NotesPageComponent, providers: [NoteService], canActivate: [authGuard] },
 ];

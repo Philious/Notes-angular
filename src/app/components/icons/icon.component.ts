@@ -1,4 +1,4 @@
-import { Component, Input, Type, ViewEncapsulation } from '@angular/core';
+import { Component, Type, ViewEncapsulation, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconEnum } from '../../../helpers/enum';
 import { AddIconComponent } from './add.component';
@@ -32,7 +32,7 @@ import { ArrowDownIconComponent } from './arrow-down.component';
   encapsulation: ViewEncapsulation.None
 })
 export class IconComponent {
-  @Input() icon!: IconEnum;
+  readonly icon = input<IconEnum>();
   // Map the enum to the corresponding icon components
   private readonly icons: Record<IconEnum, Type<unknown>> = {
     [IconEnum.Add]: AddIconComponent,
@@ -51,7 +51,8 @@ export class IconComponent {
   };
 
   getComponent() {
-    return this.icons[this.icon]
+    const icon = this.icon()
+    return icon ? this.icons[icon] : null
   }
 
 }

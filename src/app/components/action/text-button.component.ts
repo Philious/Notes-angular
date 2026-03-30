@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 
 @Component({
   selector: 'text-button',
   template: `
     <button class="btn" (click)="onClickButton($event)">
-      {{ label }}
+      {{ label() }}
     </button>
   `,
   styles: `
@@ -32,8 +32,8 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
   `
 })
 export class TextButton {
-  @Input() label: string = '';
-  @Output() onClick = new EventEmitter<Event>();
+  readonly label = input<string>('');
+  readonly onClick = output<Event>();
 
   onClickButton(event: Event) {
     this.onClick.emit(event)

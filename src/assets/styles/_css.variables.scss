@@ -27,11 +27,13 @@
 
   --p-200: hsl(330, 94%, 24%);
   --p-300: hsl(330, 94%, 34%);
+  --p-60d: hsl(330, 24%, 56%);
   --p-400: hsl(330, 65%, 56%);
   --p-500: hsl(330, 65%, 76%);
   --p-600: hsl(330, 65%, 90%);
   --p-700: hsl(330, 65%, 96%);
   
+
   --black: #000;
   --n-100: hsl(0,0%,10%);
   --n-200: hsl(0deg 0% 15%);
@@ -57,9 +59,9 @@
   --border: var(--n-300);
   --menu-border: var(--n-400);
 
-  --input-clr: var(--n-500);
+  --input-clr: var(--n-600);
   --input-bg-clr: var(--n-100);
-  --input-border: var(--n-500);
+  --input-border-clr: var(--n-200);
 
   --btn-clr: var(--n-700);
   --btn-bg-clr: var(--n-100);
