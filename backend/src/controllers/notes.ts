@@ -39,6 +39,7 @@ export const getNote = (
       res.status(200).json(note);
     } else {
       errorFn(res, 404, 'Note not found');
+      return;
     }
   } catch (err) {
     next(err);
@@ -68,6 +69,7 @@ export const newNote = (
       res.status(200).json(newNote);
     } else {
       errorFn(res, 404, 'User not found');
+      return;
     }
   } catch (err) {
     next(err);
@@ -81,7 +83,7 @@ export const updateNote = (
 ) => {
   try {
     const { userId, note } = req.body;
-
+    console.log(userId, note);
     const currentNote = notes.get(userId)?.get(note.id);
 
     if (currentNote) {

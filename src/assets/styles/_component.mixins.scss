@@ -21,28 +21,19 @@
 
   :where([btn]) {
     position: relative;
-    min-height: 2.5rem;
-    padding: 0 0.75rem;
+    min-height: 2.25rem;
+    padding: 0 1rem;
     text-align: inherit;
+    background-color: transparent;
+    border: none;
     cursor: pointer;
+    transition: background-color .15s;
     &:before {
       content: "";
       display: block;
-      inset: 0 -.25rem;
+      inset: 0 -.125rem;
       position: absolute;
     }
-    &:hover { background-color: inherit; }
-  }
-
-  :where([text-btn]) {
-    background-color: transparent;
-    border: none;
-    color: var(--label);
-    transition: filter .25s;
-    @include m.tabletUp {
-      &:hover {
-        filter: brightness(1.5);
-      }
-    }
+    &:hover { background-color: color-mix(in hsl, var(--btn-bg-clr), hsl(0,0%,100%) 4%); }
   }
 }

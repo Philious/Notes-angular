@@ -13,7 +13,9 @@ function decode(str: string): string {
 export function createToken(userId: string): string {
   const header = base64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const payload = base64url(JSON.stringify({ userId, exp: Date.now() + 86400000 })); // 1 day
-  const signature = createHmac('sha256', config.secret).update(`${header}.${payload}`).digest('base64url');
+  const signature = createHmac('sha256', config.secret)
+    .update(`${header}.${payload}`)
+    .digest('base64url');
   return `${header}.${payload}.${signature}`;
 }
 
@@ -22,7 +24,9 @@ export function verifyToken(token?: string): { userId: string } | null {
   const [header, payload, signature] = token.split('.');
   if (!header || !payload || !signature) return null;
 
-  const expected = createHmac('sha256', config.secret).update(`${header}.${payload}`).digest('base64url');
+  const expected = createHmac('sha256', config.secret)
+    .update(`${header}.${payload}`)
+    .digest('base64url');
 
   // timingSafeEqual prevents timing attacks when comparing signatures
   const sigBuffer = Buffer.from(signature);
@@ -35,7 +39,12 @@ export function verifyToken(token?: string): { userId: string } | null {
   return { userId };
 }
 
-export function authenticate(req: Request, res: Response<Record<string, any>>, next: NextFunction): void {
+export function authenticate(
+  req: Request,
+  res: Response<Record<string, unknown>>,
+  next: NextFunction,
+): void {
+  console.log(req.body);
   const token = req.headers.authorization?.split(' ')[1];
   const payload = verifyToken(token);
   if (!payload) {
@@ -43,5 +52,6 @@ export function authenticate(req: Request, res: Response<Record<string, any>>, n
     return;
   }
   req.body.userId = payload.userId;
+  console.log(req.body);
   next();
 }

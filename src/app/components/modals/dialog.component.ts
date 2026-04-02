@@ -1,11 +1,12 @@
 import { Component, input, output } from '@angular/core';
-import { actionButton } from '../../../helpers/types';
-import { TextButton } from '../action/text-button.component';
 
+type FooterButtons = {
+  label: string;
+  action: () => void;
+};
 
 @Component({
   selector: 'app-dialog',
-  imports: [TextButton],
   template: `
     <div class="dialog-box">
       @if (title()) {
@@ -19,8 +20,8 @@ import { TextButton } from '../action/text-button.component';
         </div>
       }
       <div class="action-btns">
-        @for (button of actionButtons(); track button.id) {
-          <text-button [label]="button.label" (click)="button.action()"/>
+        @for (button of actionButtons(); track button.label) {
+          <button btn (click)="button.action()">{{ button.label }}</button>
         }
       </div>
     </div>
@@ -77,11 +78,10 @@ import { TextButton } from '../action/text-button.component';
     `,
   ],
 })
-
 export class DialogComponent {
   readonly title = input<string>();
   readonly content = input<string>();
-  readonly actionButtons = input<actionButton[]>([]);
+  readonly actionButtons = input<FooterButtons[]>([]);
   readonly closeDialog = output<void>();
 
   onClose(): void {

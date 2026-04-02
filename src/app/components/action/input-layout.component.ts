@@ -61,16 +61,19 @@ let inputId = 0;
         position: relative;
         transition: border-color 0.15s;
       }
+
       .label,
       .context-help {
-        &:empty {
-          display: none;
-        }
         color: var(--label);
         font-size: var(--txt-small);
         line-height: 1.2;
       }
-
+      .label {
+        margin-bottom: 0.25rem;
+      }
+      .context-help {
+        margin-top: 0.25rem;
+      }
       &.pre-icon {
         padding-left: 2.5rem;
       }

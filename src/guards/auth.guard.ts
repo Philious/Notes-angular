@@ -1,14 +1,13 @@
-import { inject, Injector } from "@angular/core";
-import { ApiService } from "../services/api.service";
-import { Router } from "@angular/router";
-import { toObservable } from '@angular/core/rxjs-interop';
-import { filter, map, take, tap, timeout } from "rxjs";
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 // auth.guard.ts
 export const authGuard = async () => {
-  const api = inject(ApiService);
+  const authService = inject(AuthService);
   const router = inject(Router);
 
-  return api.token() ? true : router.createUrlTree(['/login']);
-}
+  if (authService.isLoggedIn()) return true;
 
+  return router.createUrlTree(['/login']);
+};

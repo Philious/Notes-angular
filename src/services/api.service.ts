@@ -1,14 +1,18 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { deleteCookie, getCookie, setCookie } from '../helpers/utils';
 import { firstValueFrom, map, Observable, take, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private baseUrl = 'http://localhost:3000';
+  private token = this.authService.token;
+
   private headers = new HttpHeaders({
     // eslint-disable-next-line @typescript-eslint/naming-convention
     'Content-Type': 'application/json',
@@ -16,26 +20,13 @@ export class ApiService {
     Accept: 'application/json',
   });
 
-  private getAuthHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Type': 'application/json',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      Accept: 'application/json',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      Authorization: `Bearer ${this.token()}`,
-    });
-  }
-
-  private _token = signal<string | null>(null);
-  token = this._token.asReadonly();
-
   initialize(): Promise<void> {
+    console.log();
     const cookie = getCookie('NOTE_COOKIE') ?? null;
     return firstValueFrom(
       this.checkLoginStatus(cookie).pipe(
         tap((isValid) => {
-          if (isValid) this._token.set(cookie);
+          if (isValid && cookie) this.authService.setToken(cookie);
         }),
         map(() => void 0),
       ),
@@ -52,7 +43,7 @@ export class ApiService {
       .pipe(take(1))
       .subscribe((response) => {
         if (response.token) {
-          this._token.set(response.token);
+          this.authService.setToken(response.token);
         }
       });
   }
@@ -68,8 +59,8 @@ export class ApiService {
       .subscribe(({ token }) => {
         if (token) {
           setCookie('NOTE_COOKIE', token, 1);
-          this.headers.append('Authorization', `Bearer ${this._token()}`);
-          this._token.set(token);
+          // this.headers .append('Authorization', `Bearer ${this.token()}`);
+          this.authService.setToken(token);
           this.router.navigate(['./notes']);
         }
       });
@@ -79,7 +70,7 @@ export class ApiService {
     return this.http.post<boolean>(
       `${this.baseUrl}/users/check`,
       { token },
-      { headers: this.getAuthHeaders() },
+      { headers: this.headers },
     );
   }
 
@@ -89,12 +80,11 @@ export class ApiService {
 
   logout() {
     this.http
-      .delete<string>(`${this.baseUrl}/users/logout`, { headers: this.getAuthHeaders() })
+      .delete<string>(`${this.baseUrl}/users/logout`, { headers: this.headers })
       .pipe(take(1))
       .subscribe(() => {
-        this._token.set(null);
+        this.authService.removeToken();
         deleteCookie('NOTE_COOKIE');
-        this.headers.delete('Authorization');
         this.router.navigate(['./login']);
       });
   }

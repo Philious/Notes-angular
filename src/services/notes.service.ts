@@ -1,7 +1,6 @@
-import { Injectable, effect, inject, signal } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Note } from '../helpers/types';
-import { ApiService } from './api.service';
 import { take } from 'rxjs';
 
 type NoteProps = {
@@ -15,18 +14,6 @@ type NoteProps = {
 @Injectable()
 export class NoteService {
   private http = inject(HttpClient);
-  private apiService = inject(ApiService);
-
-  private getAuthHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Type': 'application/json',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      Accept: 'application/json',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      Authorization: `Bearer ${this.apiService.token()}`,
-    });
-  }
 
   private baseUrl = 'http://localhost:3000/notes';
 
@@ -35,12 +22,7 @@ export class NoteService {
   activeNote = signal<Note | null>(null);
 
   constructor() {
-    const subscriber = effect(() => {
-      if (this.apiService.token()) {
-        this.getAllNotes();
-        subscriber.destroy();
-      }
-    });
+    this.getAllNotes();
   }
 
   setActiveNote(note: Note | null): void {
@@ -62,7 +44,7 @@ export class NoteService {
 
   getAllNotes(): void {
     this.http
-      .get<Note[]>(`${this.baseUrl}/all`, { headers: this.getAuthHeaders() })
+      .get<Note[]>(`${this.baseUrl}/all`)
       .pipe(take(1))
       .subscribe((notes) => {
         const mappedNotes = notes.map((n) => ({
@@ -76,37 +58,32 @@ export class NoteService {
 
   getNote(noteId: string): Promise<Note> {
     return new Promise<Note>((resolve) => {
-      this.http
-        .get<Note>(`${this.baseUrl}/${noteId}`, { headers: this.getAuthHeaders() })
-        .subscribe((note) => {
-          resolve(note);
-        });
+      this.http.get<Note>(`${this.baseUrl}/${noteId}`).subscribe((note) => {
+        resolve(note);
+      });
     });
   }
 
   addNote(note: Partial<Note>): void {
-    this.http
-      .post<Note>(`${this.baseUrl}`, note, { headers: this.getAuthHeaders() })
-      .subscribe((note) => {
-        this._notes.update((n) => {
-          n.push(note);
-          return n;
-        });
+    this.http.post<Note>(`${this.baseUrl}`, { note }).subscribe((note) => {
+      this._notes.update((n) => {
+        n.push(note);
+        return n;
       });
+    });
   }
 
   updateNote(partialNote: Partial<NoteProps> & { id: string }): void {
-    this.http
-      .put<Note>(`${this.baseUrl}`, partialNote, { headers: this.getAuthHeaders() })
-      .subscribe((note) => {
-        this._notes.update((notes) => {
-          return notes.map((n) => (n.id === note.id ? note : n));
-        });
+    console.log(partialNote);
+    this.http.put<Note>(`${this.baseUrl}`, { note: partialNote }).subscribe((note) => {
+      this._notes.update((notes) => {
+        return notes.map((n) => (n.id === note.id ? note : n));
       });
+    });
   }
 
   deleteNote(id: string): void {
-    this.http.delete(`${this.baseUrl}/${id}`, { headers: this.getAuthHeaders() }).subscribe(() => {
+    this.http.delete(`${this.baseUrl}/${id}`).subscribe(() => {
       this._notes.update((n) => {
         return n.filter((note) => note.id !== id);
       });

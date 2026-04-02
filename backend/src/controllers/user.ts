@@ -80,7 +80,6 @@ export const logout = (req: Request<{ userId: string }>, res: Response, next: Ne
       return;
     } else {
       errorFn(res, 500);
-
       return;
     }
   } catch (err) {

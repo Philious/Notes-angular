@@ -55,17 +55,38 @@ export enum PageState {
       </form>
       <div class="buttons">
         @if (pageState !== PageState.Login) {
-          <button btn class="vertical back" text-btn (click)="updateState(PageState.Login)">
+          <button
+            animate.enter="enter"
+            animate.leave="leave"
+            btn
+            class="vertical back"
+            text-btn
+            (click)="updateState(PageState.Login)"
+          >
             Back
           </button>
         }
         @if (pageState === PageState.Login) {
-          <button btn class="vertical new" text-btn (click)="updateState(PageState.NewUser)">
+          <button
+            animate.enter="enter"
+            animate.leave="leave"
+            btn
+            class="vertical new"
+            text-btn
+            (click)="updateState(PageState.NewUser)"
+          >
             New User
           </button>
         }
         @if (pageState === PageState.Login) {
-          <button btn class="vertical forgot" text-btn (click)="updateState(PageState.Forgot)">
+          <button
+            animate.enter="enter"
+            animate.leave="leave"
+            btn
+            class="vertical forgot"
+            text-btn
+            (click)="updateState(PageState.Forgot)"
+          >
             Forgot password
           </button>
         }
@@ -78,14 +99,14 @@ export enum PageState {
       background-color: transparent;
       box-sizing: border-box;
       display: grid;
-      gap: 1rem 0;
+      gap: 1.5rem 0;
       place-content: center;
       width: 100vw;
       height: 100vh;
       padding: 2rem;
       max-width: 20rem;
       margin: auto;
-      grid-template-rows: 1fr repeat(3, 3.375rem) 1fr min-content;
+      grid-template-rows: 1fr auto 3.5rem 3.5rem 1fr 4.5rem;
       grid-template-columns: 1fr 3.5rem;
       place-items: center start;
 
@@ -107,18 +128,15 @@ export enum PageState {
       }
       .buttons {
         grid-area: 6 / 1 / 7 / 3;
-      }
-      .update-email-btn {
-        transform: translateY(calc(-100% - 0.75rem));
-      }
-      .forgot {
-        .action-btn {
-          transform: translateY(-4.325rem);
-        }
-        .password {
-          opacity: 0;
-          transform: translateY(-4.325rem) scale(0);
-        }
+        justify-content: start;
+        display: grid;
+        width: 9.25rem;
+        height: 5rem;
+        position: relative;
+        transform-origin: left bottom;
+        transform: translateY(2rem) rotate(-90deg) translateY(100%);
+        transform-style: preserve-3d;
+        perspective: 40rem;
       }
     }
     .form {
@@ -127,33 +145,56 @@ export enum PageState {
     .login-btn {
       align-self: end;
       justify-self: end;
-    }
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 3rem);
-      position: relative;
-      height: 6rem;
-      width: 6rem;
-      justify-content: flex-start;
-      transform: scale(-1);
-      overflow: hidden;
-      transform-style: preserve-3d;
-      perspective: 40rem;
+      margin-bottom: 0.125rem;
     }
     .vertical {
       position: absolute;
-      writing-mode: vertical-rl;
-      transform-origin: top;
-      text-align: left;
-      height: 6rem;
-      top: 0;
+      height: 2.25rem;
+      width: fit-content;
       white-space: pre;
-      &.back,
-      &.new {
-        right: -0.75rem;
+      padding-left: 2rem;
+      transform-origin: left center;
+      rotate: y 0deg;
+      background-color: var(--n-200);
+      box-shadow:
+        1px 0 2px hsla(0, 0%, 0%, 0.2),
+        2px 0 4px hsla(0, 0%, 0%, 0.1),
+        4px 0 8px hsla(0, 0%, 0%, 0.06);
+      &.enter {
+        animation: foldin 0.5s cubic-bezier(0, 0.55, 0.45, 1);
+      }
+      &.leave {
+        animation: foldout 0.5s cubic-bezier(0.55, 0, 1, 0.45);
+      }
+      &.new,
+      &.back {
+        top: 0;
       }
       &.forgot {
-        right: 2.25rem;
+        top: 2.75rem;
+      }
+    }
+    @keyframes foldin {
+      from {
+        background: linear-gradient(270deg, var(--n-600), var(--n-200) 75%) right center / 400% 100%;
+        rotate: y 90deg;
+        background-position: 100% 0%;
+      }
+      to {
+        background: linear-gradient(270deg, var(--n-600), var(--n-200) 75%) right center / 400% 100%;
+        rotate: y 0deg;
+        background-position: 0% 0%;
+      }
+    }
+    @keyframes foldout {
+      from {
+        background: linear-gradient(270deg, var(--n-200), black 75%) right center / 400% 100%;
+        rotate: y 0deg;
+      }
+      to {
+        color: var(--n-200);
+        background: linear-gradient(270deg, var(--n-200), black 75%) right center / 400% 100%;
+        rotate: y -90deg;
       }
     }
   `,

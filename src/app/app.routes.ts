@@ -7,5 +7,11 @@ import { NoteService } from '../services/notes.service';
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', title: 'Login', component: LoginPageComponent },
-  { path: 'notes', title: 'Notes', component: NotesPageComponent, providers: [NoteService], canActivate: [authGuard] },
+  {
+    path: 'notes',
+    title: 'Notes',
+    component: NotesPageComponent,
+    providers: [NoteService],
+    canActivate: [authGuard],
+  },
 ];
