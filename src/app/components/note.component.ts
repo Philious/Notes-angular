@@ -32,9 +32,10 @@ import { formatDate } from '../../helpers/utils';
     </div>
   `,
   styles: `
+    @use 'media-size.mixins' as media;
     :host {
       grid-area: var(--note-area);
-      background-color: var(--bg);
+      background-color: var(--bg-clr);
       color: var(--clr);
       position: fixed;
       inset: 0 0 0 var(--note-width);
@@ -57,6 +58,9 @@ import { formatDate } from '../../helpers/utils';
     }
     .title-container {
       margin: 1rem 1rem 0;
+      @include media.mobile {
+        margin: 0.5rem 0.5rem 0;
+      }
     }
     .title-input {
       box-sizing: border-box;
@@ -65,17 +69,12 @@ import { formatDate } from '../../helpers/utils';
       padding: 0 0.75rem;
       color: var(--n-700);
       box-sizing: border-box;
-
+      border: 0.0625rem solid var(--n-200);
       border-radius: 4px;
-      border: 0.0625rem solid transparent;
-
-      background-color: var(--n-200);
+      background-color: var(--n-100);
+      transition: border-color 0.15s;
       &:hover {
         border: 0.0625rem solid var(--n-300);
-      }
-      &:focus {
-        border: 0.0625rem solid transparent;
-        background-color: transparent;
       }
       width: 100%;
     }
@@ -94,12 +93,15 @@ import { formatDate } from '../../helpers/utils';
     }
     .text-area-container {
       margin: 1rem;
+      @include media.mobile {
+        margin: 0.5rem;
+      }
     }
     .text-area {
       box-sizing: border-box;
       border-radius: 4px;
-      border: 0.0625rem solid var(--border);
-      background: none;
+      border: 0.0625rem solid var(--n-200);
+      background-color: var(--n-100);
       line-height: 1.5;
       font-size: 0.875rem;
       width: 100%;
@@ -108,6 +110,10 @@ import { formatDate } from '../../helpers/utils';
       white-space-collapse: break-spaces;
       overflow-y: auto;
       resize: none;
+      transition: border-color 0.15s;
+      &:hover {
+        border: 0.0625rem solid var(--n-300);
+      }
     }
   `,
 })

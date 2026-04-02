@@ -15,18 +15,19 @@ import { OverlayModule } from '@angular/cdk/overlay';
       cdkAttachPopoverAsChild
       [cdkConnectedOverlay]="{ origin, usePopover: 'inline' }"
       [cdkConnectedOverlayOpen]="trigger.expanded()"
+      [cdkConnectedOverlayPanelClass]="'pane'"
       [cdkConnectedOverlayPositions]="[
-        { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetY: 4,
+        },
       ]"
+      (itemSelected)="test($event)"
     >
-      <ul
-        animate.enter="enter"
-        animate.leave="leave"
-        class="menu context-menu"
-        ngMenu
-        (itemSelected)="menuSelection.emit($event)"
-        #menu="ngMenu"
-      >
+      <ul class="menu context-menu" ngMenu (itemSelected)="selected($event)" #menu="ngMenu">
         @for (option of options(); track option.id) {
           <li class="option" ngMenuItem [value]="option.label">
             @if (option.icon) {
@@ -40,47 +41,66 @@ import { OverlayModule } from '@angular/cdk/overlay';
   `,
   styles: `
     @use 'media-size.mixins' as media;
-    :host {
-      display: contents;
-    }
-    .mask {
-      position: fixed;
-    }
     .trigger {
+      display: grid;
+      place-items: center;
       background-color: transparent;
+      border-radius: 1rem;
       color: var(--icn-clr);
+      padding: 0;
       border: none;
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 2rem;
+      height: 2rem;
+      position: relative;
       cursor: pointer;
+      transition: background-color 0.15s;
+      &:hover {
+        background-color: color-mix(in hsl, currentColor, transparent 72%);
+      }
+      &:before {
+        content: '';
+        border-radius: 50%;
+        position: absolute;
+        inset: -0.5rem;
+
+        transition: background-color 0.15s;
+      }
     }
     .context-menu {
+      --translate-y: 1rem;
       top: 0;
       margin: 0;
       padding: 0;
       background-color: var(--overlay-bg-clr);
-      position: absolute;
+
       border-radius: 0.25rem;
       list-style-type: none;
-
+      opacity: 1;
+      translate: 0 0;
       transition:
         opacity 0.25s,
-        transform 0.25s;
-      &.enter {
-        opacity: 1;
-        transform: translateY(0);
-      }
+        translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
       &.leave {
+        translate: 0 var(--translate-y);
         opacity: 0;
-        transform: translateY(1rem);
-      }
-      @starting-style {
-        opacity: 0;
-        transform: translateY(1rem);
       }
       @include media.mobile {
-        inset: auto 1rem 1rem 1rem !important;
-        padding: 0;
+        --translate-y: 0;
+        translate: 0 -100%;
+        width: 100%;
+        .menuitem {
+          justify-content: center;
+        }
+      }
+      @starting-style {
+        translate: 0 var(--translate-y);
+        opacity: 0;
+      }
+    }
+
+    ::ng-deep .pane {
+      @include media.mobile {
+        inset: auto 1rem 1rem !important;
       }
     }
     .option {
@@ -92,8 +112,12 @@ import { OverlayModule } from '@angular/cdk/overlay';
       color: var(--overlay-clr);
       height: var(--menu-list-item-height);
       min-width: 12.5rem;
+      cursor: pointer;
       &:not(:last-child) {
         border-bottom: 0.0625rem solid var(--menu-border);
+      }
+      &:hover {
+        background-color: color-mix(in hsl, var(--overlay-bg-clr), #fff 16%);
       }
       @include media.mobile {
         height: 3rem;
@@ -102,7 +126,15 @@ import { OverlayModule } from '@angular/cdk/overlay';
   `,
 })
 export class ContextMenuComponent {
-  menu = viewChild<Menu<string>>('formatMenu');
+  menu = viewChild<Menu<string>>('menu');
   options = input<Option[] | null>(null);
-  menuSelection = output<Pick<Option, 'id'>>();
+  menuSelection = output<string>();
+  selected(label: string) {
+    this.options()
+      ?.find((o) => o.label === label)
+      ?.action();
+  }
+  isMobile() {
+    return (navigator as unknown as { userAgentData: { mobile: boolean } }).userAgentData.mobile;
+  }
 }

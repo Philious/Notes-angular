@@ -39,10 +39,10 @@ import { Note } from '../../helpers/types';
         transition: background-color 0.15s;
       }
       &:hover:after {
-        background-color: var(--hover-clr);
+        background-color: color-mix(in hsl, currentColor, transparent 92%);
       }
       &:active:after {
-        background-color: var(--action-clr);
+        background-color: color-mix(in hsl, currentColor, transparent 80%);
       }
     }
     .list-item-header {

@@ -14,7 +14,14 @@ import { NoteListComponent } from '../components/noteList.component';
     <day-info></day-info>
     <note-list [notes]="notes()" (newNote)="newNote()" (selectNote)="selectNote($event)" />
     @if (note) {
-      <note [note]="note" (cancelNote)="cancelNote()" (saveNote)="saveNote($event)" />
+      <note
+        animate.leave="leave"
+        class="note"
+        [note]="note"
+        (cancelNote)="cancelNote()"
+        (removeNote)="removeNote($event)"
+        (saveNote)="saveNote($event)"
+      />
     }
   `,
   styles: [
@@ -31,6 +38,27 @@ import { NoteListComponent } from '../components/noteList.component';
           grid-template-rows: var(--day-area-height) calc(100vh - var(--day-area-height));
         }
       }
+      .note {
+        transition:
+          opacity 0.25s,
+          translate 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+          scale 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        opacity: 1;
+        translate: 0 0;
+        scale: 1 1;
+        transform-origin: center bottom;
+        &.leave {
+          transition-duration: 0.5s;
+          opacity: 0;
+          translate: 0 4rem;
+          scale: 1 0.75;
+        }
+        @starting-style {
+          opacity: 0;
+          translate: 0 4rem;
+          scale: 1 0.75;
+        }
+      }
     `,
   ],
 })
@@ -43,7 +71,6 @@ export class NotesPageComponent {
   protected selectNote(noteId: string) {
     const note = this.notes().find((n) => n.id === noteId) ?? null;
     this.note.set(note);
-    console.log('select note', this.note());
   }
 
   protected saveNote(props: NoteProps) {
@@ -64,6 +91,11 @@ export class NotesPageComponent {
   }
 
   protected cancelNote() {
+    this.note.set(null);
+  }
+
+  protected removeNote(noteId: string | null) {
+    if (noteId) this.noteService.deleteNote(noteId);
     this.note.set(null);
   }
 }

@@ -12,12 +12,16 @@ import { IconEnum } from '../../../helpers/enum';
     </button>
   `,
   styles: `
+    :host {
+      width: 2rem;
+      height: 2rem;
+    }
     .btn {
       background-color: transparent;
       border: none;
       padding: 0;
-      width: 2rem;
-      height: 2rem;
+      width: inherit;
+      height: inherit;
       border-radius: 50%;
       position: relative;
       color: currentColor;
@@ -36,6 +40,9 @@ import { IconEnum } from '../../../helpers/enum';
       }
       .icn {
         color: currentColor;
+      }
+      &:hover {
+        background-color: color-mix(in hsl, currentColor, transparent 72%);
       }
     }
     :host-context(.fill) .btn {

@@ -10,7 +10,6 @@ import { ListItem } from './noteListItem.component';
   selector: 'note-list',
   imports: [ListItem, ContextMenuComponent, IconButtonComponent, IconComponent],
   template: `
-    {{ notes().length }}
     <ul class="list">
       @for (note of notes(); track note.id) {
         <li class="list-item-container">
@@ -67,6 +66,7 @@ import { ListItem } from './noteListItem.component';
     .list-options {
       display: flex;
       gap: 0.5rem;
+      color: var(--n-500);
     }
     .list {
       background-color: var(--bg-clr);
@@ -100,6 +100,7 @@ export class NoteListComponent {
   newNote = output<void>();
 
   updateAppFontSize(size: number) {
+    console.log(document.documentElement);
     this.renderer.setProperty(document.documentElement, 'style', `--app-font-size: ${size}px`);
   }
 
