@@ -11,7 +11,6 @@ export class ApiService {
   private authService = inject(AuthService);
   private router = inject(Router);
   private baseUrl = 'http://localhost:3000';
-  private token = this.authService.token;
 
   private headers = new HttpHeaders({
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -21,7 +20,6 @@ export class ApiService {
   });
 
   initialize(): Promise<void> {
-    console.log();
     const cookie = getCookie('NOTE_COOKIE') ?? null;
     return firstValueFrom(
       this.checkLoginStatus(cookie).pipe(

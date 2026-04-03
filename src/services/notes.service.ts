@@ -66,27 +66,19 @@ export class NoteService {
 
   addNote(note: Partial<Note>): void {
     this.http.post<Note>(`${this.baseUrl}`, { note }).subscribe((note) => {
-      this._notes.update((n) => {
-        n.push(note);
-        return n;
-      });
+      this._notes.update((n) => [...n, note]);
     });
   }
 
   updateNote(partialNote: Partial<NoteProps> & { id: string }): void {
-    console.log(partialNote);
     this.http.put<Note>(`${this.baseUrl}`, { note: partialNote }).subscribe((note) => {
-      this._notes.update((notes) => {
-        return notes.map((n) => (n.id === note.id ? note : n));
-      });
+      this._notes.update((notes) => notes.map((n) => (n.id === note.id ? note : n)));
     });
   }
 
   deleteNote(id: string): void {
     this.http.delete(`${this.baseUrl}/${id}`).subscribe(() => {
-      this._notes.update((n) => {
-        return n.filter((note) => note.id !== id);
-      });
+      this._notes.update((n) => n.filter((note) => note.id !== id));
     });
   }
 }
