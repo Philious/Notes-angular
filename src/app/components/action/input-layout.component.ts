@@ -14,20 +14,21 @@ let inputId = 0;
   template: `
     @if (label()) {
       <label class="label" [for]="inputId()">{{ label() }}</label>
-      @if (preIcon()) {
-        <icon class="prefix-icon" [icon]="preIcon()" />
-      }
-      <ng-content />
-      @if (postIcon()) {
-        <icon class="sufix-icon" [icon]="postIcon()" />
-      }
-      @if (helpText()) {
-        <div class="context-help">{{ helpText() }}</div>
-      }
+    }
+    @if (preIcon()) {
+      <icon class="prefix-icon" [icon]="preIcon()" />
+    }
+    <ng-content />
+    @if (postIcon()) {
+      <icon class="sufix-icon" [icon]="postIcon()" />
+    }
+    @if (helpText()) {
+      <div class="context-help">{{ helpText() }}</div>
     }
   `,
   styles: `
     :where(:host) {
+      box-sizing: border-box;
       width: 100%;
       display: grid;
       grid-template-rows: auto 2.25rem auto;
@@ -48,7 +49,7 @@ let inputId = 0;
         grid-area: 3 / 1 / 4 / 4;
       }
 
-      .input-wrapper {
+      :host-context(.input-wrapper) {
         background-color: var(--input-bg-clr);
         border: 0.0625rem solid var(-input-border);
         color: var(--input-clr);
@@ -90,7 +91,7 @@ let inputId = 0;
       transition-property: background-color, border-color;
       transition: 0.15s;
       &:hover {
-        border-color: color-mix(in hsl, var(--input-border-clr) 92%, #fff 8%);
+        border-color: color-mix(in hsl, var(--input-border-clr) 92%, currentColor 8%);
       }
       &[disabled] {
         opacity: 0.6;

@@ -10,13 +10,6 @@ import { ListItem } from './noteListItem.component';
   selector: 'note-list',
   imports: [ListItem, ContextMenuComponent, IconButtonComponent, IconComponent],
   template: `
-    <ul class="list">
-      @for (note of notes(); track note.id) {
-        <li class="list-item-container">
-          <list-item [note]="note" (click)="selectNote.emit(note.id)" />
-        </li>
-      }
-    </ul>
     <div class="list-header">
       <div class="header">Notes</div>
       <div class="list-options">
@@ -26,6 +19,13 @@ import { ListItem } from './noteListItem.component';
         <icn-btn [icon]="IconEnum.Add" (update)="newNote.emit()" />
       </div>
     </div>
+    <ul class="list">
+      @for (note of notes(); track note.id) {
+        <li class="list-item-container">
+          <list-item [note]="note" (click)="selectNote.emit(note.id)" />
+        </li>
+      }
+    </ul>
   `,
   styles: `
     @use 'media-size.mixins' as media;
@@ -34,7 +34,7 @@ import { ListItem } from './noteListItem.component';
       grid-area: var(--list-area);
       max-width: var(--note-list-width);
       max-height: 100%;
-      overflow-y: auto;
+      overflow-y: hidden;
       box-shadow: 1px 0 0 var(--border);
       flex: 1;
       display: flex;
@@ -66,7 +66,7 @@ import { ListItem } from './noteListItem.component';
     .list-options {
       display: flex;
       gap: 0.5rem;
-      color: var(--n-500);
+      color: var(--icn-clr);
     }
     .list {
       background-color: var(--bg-clr);

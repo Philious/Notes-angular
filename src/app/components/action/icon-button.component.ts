@@ -7,7 +7,7 @@ import { IconEnum } from '../../../helpers/enum';
   selector: 'icn-btn',
   imports: [IconComponent, CommonModule],
   template: `
-    <button class="btn" (click)="update.emit()">
+    <button class="btn" hover (click)="update.emit()">
       <icon class="icn" [icon]="icon()" />
     </button>
   `,
@@ -24,12 +24,12 @@ import { IconEnum } from '../../../helpers/enum';
       height: inherit;
       border-radius: 50%;
       position: relative;
-      color: currentColor;
       display: grid;
       place-content: center;
       cursor: pointer;
       transition-property: border-color, background-color;
       transition: 0.15s;
+      color: currentColor;
       &:before {
         content: '';
         border-radius: 50%;
@@ -41,15 +41,15 @@ import { IconEnum } from '../../../helpers/enum';
       .icn {
         color: currentColor;
       }
-      &:hover {
-        background-color: color-mix(in hsl, currentColor, transparent 72%);
+      &:after {
+        border-radius: 50%;
       }
     }
     :host-context(.fill) .btn {
       background-color: var(--icn-bg-clr);
       color: var(--icn-clr-filled);
       &:hover {
-        background-color: color-mix(in hsl, var(--icn-bg-clr), #fff 16%);
+        background-color: color-mix(in hsl, var(--icn-bg-clr), currentColor 16%);
       }
     }
     :host-context(.stroke) .btn {

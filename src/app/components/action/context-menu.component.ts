@@ -8,7 +8,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
   selector: 'context-menu',
   imports: [IconComponent, Menu, MenuItem, MenuTrigger, OverlayModule],
   template: `
-    <button class="trigger" ngMenuTrigger [menu]="menu()" #origin #trigger="ngMenuTrigger">
+    <button class="trigger" hover ngMenuTrigger [menu]="menu()" #origin #trigger="ngMenuTrigger">
       <ng-content />
     </button>
     <ng-template
@@ -29,7 +29,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     >
       <ul class="menu context-menu" ngMenu (itemSelected)="selected($event)" #menu="ngMenu">
         @for (option of options(); track option.id) {
-          <li class="option" ngMenuItem [value]="option.label">
+          <li class="option" hover ngMenuItem [value]="option.label">
             @if (option.icon) {
               <icon [icon]="option.icon" />
             }
@@ -46,7 +46,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
       place-items: center;
       background-color: transparent;
       border-radius: 1rem;
-      color: var(--icn-clr);
+      color: currentColor;
       padding: 0;
       border: none;
       width: 2rem;
@@ -54,20 +54,19 @@ import { OverlayModule } from '@angular/cdk/overlay';
       position: relative;
       cursor: pointer;
       transition: background-color 0.15s;
-      &:hover {
-        background-color: color-mix(in hsl, currentColor, transparent 72%);
-      }
       &:before {
-        content: '';
+        inset: -0.25rem;
+      }
+      &:after {
         border-radius: 50%;
-        position: absolute;
-        inset: -0.5rem;
-
-        transition: background-color 0.15s;
       }
     }
     .context-menu {
       --translate-y: 1rem;
+      box-shadow:
+        0 1px 2px hsla(0, 0%, 0%, 0.2),
+        0 2px 4px hsla(0, 0%, 0%, 0.1),
+        0 4px 8px hsla(0, 0%, 0%, 0.06);
       top: 0;
       margin: 0;
       padding: 0;
@@ -115,9 +114,6 @@ import { OverlayModule } from '@angular/cdk/overlay';
       cursor: pointer;
       &:not(:last-child) {
         border-bottom: 0.0625rem solid var(--menu-border);
-      }
-      &:hover {
-        background-color: color-mix(in hsl, var(--overlay-bg-clr), #fff 16%);
       }
       @include media.mobile {
         height: 3rem;

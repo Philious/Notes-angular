@@ -14,9 +14,12 @@
   }
 
   :where([input]) {
-    /*
-    color: var(--input-clr);
-    */
+    border: 1px solid var(--input-border-clr);
+      color: var(--input-clr);
+      border-radius: 0.125rem;
+      background-color: var(--input-bg-clr);
+      transition-property: background-color, border-color;
+      transition: 0.15s;
   }
 
   :where([btn]) {
@@ -35,5 +38,23 @@
       position: absolute;
     }
     &:hover { background-color: color-mix(in hsl, var(--btn-bg-clr), hsl(0,0%,100%) 4%); }
+  }
+  :where([hover])  {
+     &:after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background-color: transparent;
+        transition: opacity 0.15s;
+      }
+      &:hover:after {
+        background-color: currentColor;
+        filter: invert(1);
+        opacity: var(--hover-opacity);
+      }
+      &:active:after {
+        opacity: var(--active-opacity);
+      }
   }
 }

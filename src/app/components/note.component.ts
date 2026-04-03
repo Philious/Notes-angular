@@ -4,14 +4,15 @@ import { IconButtonComponent } from './action/icon-button.component';
 import { ButtonStyleEnum, IconEnum } from '../../helpers/enum';
 import { NoteProps } from '../../helpers/types';
 import { formatDate } from '../../helpers/utils';
+import { InputLayoutComponent } from './action/input-layout.component';
 
 @Component({
   selector: 'note',
-  imports: [IconButtonComponent, ReactiveFormsModule, FormsModule],
+  imports: [IconButtonComponent, ReactiveFormsModule, FormsModule, InputLayoutComponent],
   template: `
-    <div class="title-container">
-      <input class="title-input" input [(ngModel)]="title" />
-    </div>
+    <input-layout class="title-container" [inputId]="'note-title'">
+      <input class="title-input" type="text" [(ngModel)]="title" />
+    </input-layout>
     <div class="date">
       <span>Created: {{ createdAt() }}</span>
       @if (updatedAt()) {
@@ -50,6 +51,7 @@ import { formatDate } from '../../helpers/utils';
       padding: 0 0.5rem;
       justify-content: space-between;
       border-top: 0.0625rem solid var(--border);
+      color: var(--icn-clr);
     }
     .toolbar-left-section,
     .toolbar-right-section {
@@ -57,26 +59,18 @@ import { formatDate } from '../../helpers/utils';
       gap: 0.5rem;
     }
     .title-container {
+      display: flex;
       margin: 1rem 1rem 0;
+      width: initial;
+      height: 3rem;
+      grid-template-rows: 3rem;
       @include media.mobile {
         margin: 0.5rem 0.5rem 0;
       }
     }
     .title-input {
-      box-sizing: border-box;
+      flex: 1;
       font-size: 1rem;
-      height: 3rem;
-      padding: 0 0.75rem;
-      color: var(--n-700);
-      box-sizing: border-box;
-      border: 0.0625rem solid var(--n-200);
-      border-radius: 4px;
-      background-color: var(--n-100);
-      transition: border-color 0.15s;
-      &:hover {
-        border: 0.0625rem solid var(--n-300);
-      }
-      width: 100%;
     }
     .date {
       font-size: 0.625rem;
@@ -100,8 +94,7 @@ import { formatDate } from '../../helpers/utils';
     .text-area {
       box-sizing: border-box;
       border-radius: 4px;
-      border: 0.0625rem solid var(--n-200);
-      background-color: var(--n-100);
+
       line-height: 1.5;
       font-size: 0.875rem;
       width: 100%;
@@ -110,10 +103,6 @@ import { formatDate } from '../../helpers/utils';
       white-space-collapse: break-spaces;
       overflow-y: auto;
       resize: none;
-      transition: border-color 0.15s;
-      &:hover {
-        border: 0.0625rem solid var(--n-300);
-      }
     }
   `,
 })

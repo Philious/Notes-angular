@@ -42,7 +42,14 @@
   --n-500: hsl(0, 0%, 64%);
   --n-600: hsl(0, 0%, 80%);
   --n-700: hsl(0, 0%, 90%);
+  --n-800: hsl(0, 0%, 95%);
+  --n-900: hsl(0, 0%, 98%);
   --white: #fff;
+
+  --outline: var(--p-60d);
+
+  --hover-opacity: 0.08;
+    --active-opacity: 0.12;
 
   --clr: var(--white);
   --bg-clr: var(--black);
@@ -79,17 +86,27 @@
     --clr: var(--black);
     --bg-clr: var(--white);
 
+    --outline: var(--p-500);
+
+    --hover-opacity: 0.06;
+    --active-opacity: 0.08;
+
     --header-clr: var(--n-300);
     --para-clr: var(--n-400);
+
+    --overlay-clr: var(--n-400);
+    --overlay-bg-clr: var(--white);
+    --menu-border: var(--n-700);
 
     --border: var(--n-600);
 
     --input-clr: var(--n-200);
-    --input-bg-clr: var(--n-600);
-    --input-border: var(--n-500);
+    --input-bg-clr: var(--white);
+    --input-border-clr: var(--n-600);
 
     --label: var(--n-400);
 
+    --icn-clr: var(--p-400);
     --icn-bg-clr: var(--n-600);
     --hover-clr: hsla(0,0%,0%,.05);
     --action-clr: hsla(0,0%,0%,.1);

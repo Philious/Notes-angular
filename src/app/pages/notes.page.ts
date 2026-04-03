@@ -28,10 +28,14 @@ import { NoteListComponent } from '../components/noteList.component';
     `
       @use 'media-size.mixins' as media;
       :host {
+        background-color: var(--black);
         display: flex;
         flex-direction: column;
         box-shadow: 0.0625rem 0 0 var(--n-300);
         height: 100vh;
+        @media (prefers-color-scheme: light) {
+          background-color: var(--n-800);
+        }
         @include media.tabletUp {
           display: grid;
           grid-template-columns: var(--main-columns);

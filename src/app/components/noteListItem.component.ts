@@ -31,18 +31,16 @@ import { Note } from '../../helpers/types';
       width: 100%;
       height: min-content;
       position: relative;
-      &:after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: transparent;
-        transition: background-color 0.15s;
-      }
       &:hover:after {
-        background-color: color-mix(in hsl, currentColor, transparent 92%);
-      }
-      &:active:after {
-        background-color: color-mix(in hsl, currentColor, transparent 80%);
+        content: '';
+        inset: 0;
+        position: absolute;
+        background-color: var(--n-100);
+        mix-blend-mode: screen;
+        @media (prefers-color-scheme: light) {
+          mix-blend-mode: multiply;
+          background-color: var(--n-900);
+        }
       }
     }
     .list-item-header {
