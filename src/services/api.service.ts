@@ -31,37 +31,45 @@ export class ApiService {
     );
   }
 
-  createUser(email: string, password: string) {
-    this.http
-      .post<{ token: string }>(
-        `${this.baseUrl}/users`,
-        { email, password },
-        { headers: this.headers },
-      )
-      .pipe(take(1))
-      .subscribe((response) => {
-        if (response.token) {
-          this.authService.setToken(response.token);
-        }
-      });
+  createUser(email: string, password: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http
+        .post<{ token: string }>(
+          `${this.baseUrl}/users`,
+          { email, password },
+          { headers: this.headers },
+        )
+        .pipe(take(1))
+        .subscribe((response) => {
+          if (response.token) {
+            resolve(true);
+            this.authService.setToken(response.token);
+          }
+          resolve(false);
+        });
+    });
   }
 
-  login(email: string, password: string): void {
-    this.http
-      .post<{ token: string }>(
-        `${this.baseUrl}/users/login`,
-        { email, password },
-        { headers: this.headers },
-      )
-      .pipe(take(1))
-      .subscribe(({ token }) => {
-        if (token) {
-          setCookie('NOTE_COOKIE', token, 1);
-          // this.headers .append('Authorization', `Bearer ${this.token()}`);
-          this.authService.setToken(token);
-          this.router.navigate(['./notes']);
-        }
-      });
+  login(email: string, password: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http
+        .post<{ token: string }>(
+          `${this.baseUrl}/users/login`,
+          { email, password },
+          { headers: this.headers },
+        )
+        .pipe(take(1))
+        .subscribe(({ token }) => {
+          if (token) {
+            setCookie('NOTE_COOKIE', token, 1);
+            // this.headers .append('Authorization', `Bearer ${this.token()}`);
+            this.authService.setToken(token);
+            this.router.navigate(['./notes']);
+            resolve(true);
+          }
+          resolve(false);
+        });
+    });
   }
 
   checkLoginStatus(token: string | null): Observable<boolean> {

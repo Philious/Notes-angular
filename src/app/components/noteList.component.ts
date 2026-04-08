@@ -13,10 +13,10 @@ import { ListItem } from './noteListItem.component';
     <div class="list-header">
       <div class="header">Notes</div>
       <div class="list-options">
-        <context-menu [options]="letterSizeMenu">
+        <context-menu [ariaLabel]="'Change font size'" [options]="letterSizeMenu">
           <icon [icon]="IconEnum.LetterSize" />
         </context-menu>
-        <icn-btn [icon]="IconEnum.Add" (update)="newNote.emit()" />
+        <icn-btn [ariaLabel]="'New Note'" [icon]="IconEnum.Add" (update)="newNote.emit()" />
       </div>
     </div>
     <ul class="list">

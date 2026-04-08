@@ -3,25 +3,6 @@
 
 //Components
 @mixin components {
-  :where([base-input]) {
-    /*
-    border: none;
-    background: transparent;
-    padding: 0;
-    position: absolute;
-    inset: 0;
-    */
-  }
-
-  :where([input]) {
-    border: 1px solid var(--input-border-clr);
-      color: var(--input-clr);
-      border-radius: 0.125rem;
-      background-color: var(--input-bg-clr);
-      transition-property: background-color, border-color;
-      transition: 0.15s;
-  }
-
   :where([btn]) {
     position: relative;
     min-height: 2.25rem;

@@ -7,7 +7,7 @@ import { IconEnum } from '../../../helpers/enum';
   selector: 'icn-btn',
   imports: [IconComponent, CommonModule],
   template: `
-    <button class="btn" hover (click)="update.emit()">
+    <button class="btn" hover [aria-label]="ariaLabel()" (click)="update.emit()">
       <icon class="icn" [icon]="icon()" />
     </button>
   `,
@@ -65,6 +65,7 @@ import { IconEnum } from '../../../helpers/enum';
 })
 export class IconButtonComponent {
   readonly icon = input.required<IconEnum>();
+  readonly ariaLabel = input.required();
   readonly color = input('var(--icon)');
 
   readonly update = output<void>();

@@ -19,16 +19,20 @@ import { InputLayoutComponent } from './action/input-layout.component';
         <span>Updated: {{ updatedAt() }}</span>
       }
     </div>
-    <div class="text-area-container">
-      <textarea class="text-area" input [(ngModel)]="content"></textarea>
-    </div>
+    <input-layout class="text-area-container">
+      <textarea class="text-area input" [(ngModel)]="content"></textarea>
+    </input-layout>
     <div class="toolbar">
       <div class="toolbar-left-section">
-        <icn-btn [icon]="IconEnum.Left" (update)="cancelNote.emit()" />
-        <icn-btn [icon]="IconEnum.Check" (update)="saveNoteMapper()" />
+        <icn-btn [ariaLabel]="'Cancel'" [icon]="IconEnum.Left" (update)="cancelNote.emit()" />
+        <icn-btn [ariaLabel]="'Save'" [icon]="IconEnum.Check" (update)="saveNoteMapper()" />
       </div>
       <div class="toolbar-right-section">
-        <icn-btn [icon]="IconEnum.Remove" (update)="removeNote.emit(note().id ?? null)" />
+        <icn-btn
+          [ariaLabel]="'Delete'"
+          [icon]="IconEnum.Remove"
+          (update)="removeNote.emit(note().id ?? null)"
+        />
       </div>
     </div>
   `,
@@ -87,22 +91,19 @@ import { InputLayoutComponent } from './action/input-layout.component';
     }
     .text-area-container {
       margin: 1rem;
+      width: initial;
       @include media.mobile {
         margin: 0.5rem;
       }
     }
-    .text-area {
-      box-sizing: border-box;
-      border-radius: 4px;
-
+    .text-area.input {
       line-height: 1.5;
       font-size: 0.875rem;
-      width: 100%;
-      height: 100%;
       padding: 1rem 0.75rem;
       white-space-collapse: break-spaces;
       overflow-y: auto;
       resize: none;
+      grid-area: 1 / 1 / 4 / 4;
     }
   `,
 })

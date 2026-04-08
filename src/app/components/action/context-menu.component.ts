@@ -8,7 +8,15 @@ import { OverlayModule } from '@angular/cdk/overlay';
   selector: 'context-menu',
   imports: [IconComponent, Menu, MenuItem, MenuTrigger, OverlayModule],
   template: `
-    <button class="trigger" hover ngMenuTrigger [menu]="menu()" #origin #trigger="ngMenuTrigger">
+    <button
+      class="trigger"
+      hover
+      ngMenuTrigger
+      [ariaLabel]="ariaLabel()"
+      [menu]="menu()"
+      #origin
+      #trigger="ngMenuTrigger"
+    >
       <ng-content />
     </button>
     <ng-template
@@ -124,6 +132,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 export class ContextMenuComponent {
   menu = viewChild<Menu<string>>('menu');
   options = input<Option[] | null>(null);
+  ariaLabel = input.required<string>();
   menuSelection = output<string>();
   selected(label: string) {
     this.options()

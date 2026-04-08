@@ -1,4 +1,4 @@
-import { Component, Type, ViewEncapsulation, input } from '@angular/core';
+import { Component, input, Type, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconEnum } from '../../../helpers/enum';
 import { AddIconComponent } from './add.component';
@@ -18,10 +18,12 @@ import { ArrowDownIconComponent } from './arrow-down.component';
   selector: 'icon',
   imports: [CommonModule],
   template: `
-      <ng-container *ngComponentOutlet="getComponent()" />
+    <ng-container *ngComponentOutlet="getComponent()" />
   `,
   styles: `
-    :host { display: contents; } 
+    :host {
+      display: contents;
+    }
     .icn {
       fill: CurrentColor;
       display: block;
@@ -29,7 +31,7 @@ import { ArrowDownIconComponent } from './arrow-down.component';
       height: 1.5rem;
     }
   `,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class IconComponent {
   readonly icon = input<IconEnum>();
@@ -51,8 +53,7 @@ export class IconComponent {
   };
 
   getComponent() {
-    const icon = this.icon()
-    return icon ? this.icons[icon] : null
+    const icon = this.icon();
+    return icon ? this.icons[icon] : null;
   }
-
 }

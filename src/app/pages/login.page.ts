@@ -1,13 +1,7 @@
-import { Component, inject } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputLayoutComponent } from '../components/action/input-layout.component';
-import { IconEnum, InputState } from '../../helpers/enum';
+import { IconEnum } from '../../helpers/enum';
 import { IconButtonComponent } from '../components/action/icon-button.component';
 import { ApiService } from '../../services/api.service';
 
@@ -22,42 +16,63 @@ export enum PageState {
   imports: [InputLayoutComponent, IconButtonComponent, ReactiveFormsModule],
   template: `
     <div class="login-view">
-      <div class="title">{{ title }}</div>
-      <form class="form" [class]="pageState" [formGroup]="profileForm" (ngSubmit)="login()">
+      <div
+        class="title"
+        [attr.current-title]="title.current"
+        [attr.previous-title]="title.previous"
+        [class.animate]="animationDelay()"
+      >
+        {{ title.current }}
+      </div>
+      <form class="form" [class]="pageState()" [formGroup]="profileForm" (ngSubmit)="submit()">
         <input-layout
           class="email"
-          [helpText]="emailFieldHelpText"
+          [helpText]="helpText(profileForm.controls.email)"
           [inputId]="'email'"
           [label]="'Email'"
-          [state]="emailFieldState"
         >
           <input
             autocomplete="on"
-            base-input
             formControlName="email"
             id="email"
-            input
+            input-base
+            input-field
             type="text"
           />
         </input-layout>
-        @if (pageState !== PageState.Forgot) {
+        @if (pageState() !== PageState.Forgot) {
           <input-layout
+            animate.leave="leave"
             class="password"
-            [helpText]="passwordFieldHelpText"
+            [helpText]="helpText(profileForm.controls.password)"
             [inputId]="'password'"
             [label]="'Password'"
-            [state]="passwordFieldState"
           >
-            <input base-input formControlName="password" id="password" input type="text" />
+            <input
+              formControlName="password"
+              id="password"
+              input-base
+              input-field
+              type="password"
+            />
           </input-layout>
         }
-        <icn-btn class="login-btn fill" type="submit" [icon]="IconEnum.Right" />
+        <icn-btn
+          class="login-btn fill"
+          type="submit"
+          [ariaLabel]="'submit'"
+          [icon]="IconEnum.Right"
+        />
+        @if (formError()) {
+          <div class="form-error">{{ formError() }}</div>
+        }
       </form>
       <div class="buttons">
-        @if (pageState !== PageState.Login) {
+        @if (pageState() !== PageState.Login) {
           <button
             animate.enter="enter"
             animate.leave="leave"
+            aria-label="Back"
             btn
             class="vertical back"
             text-btn
@@ -66,10 +81,11 @@ export enum PageState {
             Back
           </button>
         }
-        @if (pageState === PageState.Login) {
+        @if (pageState() === PageState.Login) {
           <button
             animate.enter="enter"
             animate.leave="leave"
+            aria-label="New User"
             btn
             class="vertical new"
             text-btn
@@ -78,10 +94,11 @@ export enum PageState {
             New User
           </button>
         }
-        @if (pageState === PageState.Login) {
+        @if (pageState() === PageState.Login) {
           <button
             animate.enter="enter"
             animate.leave="leave"
+            aria-label="Forgot password"
             btn
             class="vertical forgot"
             text-btn
@@ -106,25 +123,62 @@ export enum PageState {
       padding: 2rem;
       max-width: 20rem;
       margin: auto;
-      grid-template-rows: 1fr auto 3.5rem 3.5rem 1fr 4.5rem;
+      grid-template-rows: 1fr auto repeat(2, minmax(3.5rem, min-content)) 1fr 4.5rem;
       grid-template-columns: 1fr 3.5rem;
       place-items: center start;
-
+      translate: 0 0;
       .title {
         grid-area: 2 / 1 / 3 / 2;
+        position: relative;
+        &:before {
+          content: attr(current-title);
+          color: var(--white);
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          white-space: nowrap;
+        }
+        &:after {
+          content: attr(previous-title);
+          color: var(--white);
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          white-space: nowrap;
+        }
+        &.animate {
+          color: transparent;
+          &:before {
+            animation: rollin 0.5s;
+          }
+          &:after {
+            animation: rollout 0.5s;
+          }
+        }
       }
       .email {
         grid-area: 3 / 1 / 4 / 2;
       }
       .password {
         grid-area: 4 / 1 / 5 / 2;
+        translate: 0 0;
+        opacity: 1;
         transition:
           opacity 0.25s,
-          transform 0.25s;
+          translate 0.25s;
+        &.leave {
+          translate: 0 -1rem;
+          opacity: 0;
+        }
+        @starting-style {
+          translate: 0 -1rem;
+          opacity: 0;
+        }
       }
       .login-btn {
         grid-area: 4 / 3 / 5 / 2;
-        transition: transform 0.25s;
+        place-self: start end;
+        transition: translate 0.25s cubic-bezier(0.22, 1, 0.36, 1);
       }
       .buttons {
         grid-area: 6 / 1 / 7 / 3;
@@ -141,11 +195,23 @@ export enum PageState {
     }
     .form {
       display: contents;
+      &.new .login-btn,
+      &.login .login-btn {
+        translate: 0 1.25rem;
+      }
+      &.forgot .login-btn {
+        translate: 0 -3.625rem;
+      }
     }
     .login-btn {
       align-self: end;
       justify-self: end;
-      margin-bottom: 0.125rem;
+    }
+    .form-error {
+      color: var(--error);
+      font-size: var(--txt-mid);
+      grid-area: 5 / 1 / 6 / 3;
+      place-self: start center;
     }
     .vertical {
       position: absolute;
@@ -172,6 +238,26 @@ export enum PageState {
       }
       &.forgot {
         top: 2.75rem;
+      }
+    }
+    @keyframes rollout {
+      from {
+        translate: 0 0;
+        opacity: 1;
+      }
+      to {
+        translate: 0 100%;
+        opacity: 0;
+      }
+    }
+    @keyframes rollin {
+      from {
+        translate: 0 -100%;
+        opacity: 0;
+      }
+      to {
+        translate: 0 0;
+        opacity: 1;
       }
     }
     @keyframes foldin {
@@ -204,24 +290,20 @@ export class LoginPageComponent {
 
   protected readonly IconEnum = IconEnum;
   protected readonly PageState = PageState;
-  protected title = 'Notes';
+  protected title = { current: 'Notes', previous: '' };
 
-  pageState = PageState.Login;
-
-  emailFieldState = InputState.Default;
-  emailFieldHelpText = '';
-
-  passwordFieldState = InputState.Default;
-  passwordFieldHelpText = '';
-
-  profileForm = new FormGroup({
+  protected profileForm = new FormGroup({
     email: new FormControl('conny@carneval.com', [Validators.required, Validators.email]),
     password: new FormControl('123456', [Validators.required, Validators.minLength(6)]),
   });
 
-  helpText = (errors: ValidationErrors | null): string => {
-    const key = Object.keys(errors ?? [])?.[0];
-    if (typeof key === 'string') {
+  protected pageState = signal(PageState.Login);
+  protected animationDelay = signal(false);
+  protected formError = signal<string | null>(null);
+
+  protected helpText = (control: FormControl): string => {
+    const key = Object.keys(control.errors ?? [])?.[0];
+    if (typeof key === 'string' && control.touched) {
       return (
         {
           required: 'Field is required.',
@@ -233,22 +315,26 @@ export class LoginPageComponent {
   };
 
   updateState(state: PageState) {
-    this.pageState = state;
-    if (PageState.Forgot === state) this.title = 'Forgot Password';
-    else if (PageState.NewUser === state) this.title = 'New User';
-    else this.title = 'Notes';
+    this.pageState.set(state);
+    this.animationDelay.set(true);
+    setTimeout(() => this.animationDelay.set(false), 500);
+    this.title.previous = this.title.current;
+    if (PageState.Forgot === state) this.title.current = 'Forgot Password';
+    else if (PageState.NewUser === state) this.title.current = 'New User';
+    else this.title.current = 'Notes';
   }
 
-  login(): void {
+  async submit(): Promise<void> {
     this.profileForm.updateValueAndValidity();
-
+    let response = true;
     if (this.profileForm.valid) {
       const raw = this.profileForm.getRawValue();
-      if (this.pageState === PageState.Login) {
-        this.apiService.login(raw.email!, raw.password!);
-      } else if (this.pageState === PageState.NewUser) {
-        this.apiService.createUser(raw.email!, raw.password!);
+      if (this.pageState() === PageState.Login) {
+        response = await this.apiService.login(raw.email!, raw.password!);
+      } else if (this.pageState() === PageState.NewUser) {
+        response = await this.apiService.createUser(raw.email!, raw.password!);
       }
     }
+    if (!response) this.formError.set('No way Jose, try again');
   }
 }

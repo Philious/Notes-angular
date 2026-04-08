@@ -4,7 +4,7 @@ import { Note } from '../../helpers/types';
 @Component({
   selector: 'list-item',
   template: `
-    <button base-input class="list-item" (click)="activeNote.emit()">
+    <button class="list-item" input-base [ariaLabel]="note().title" (click)="activeNote.emit()">
       <div class="list-item-header">
         {{ note().title }}
       </div>
