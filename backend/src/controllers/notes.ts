@@ -83,7 +83,6 @@ export const updateNote = (
 ) => {
   try {
     const { userId, note } = req.body;
-    console.log(userId, note);
     const currentNote = notes.get(userId)?.get(note.id);
 
     if (currentNote) {

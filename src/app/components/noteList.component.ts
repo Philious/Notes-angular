@@ -100,7 +100,6 @@ export class NoteListComponent {
   newNote = output<void>();
 
   updateAppFontSize(size: number) {
-    console.log(document.documentElement);
     this.renderer.setProperty(document.documentElement, 'style', `--app-font-size: ${size}px`);
   }
 

@@ -44,7 +44,6 @@ export function authenticate(
   res: Response<Record<string, unknown>>,
   next: NextFunction,
 ): void {
-  console.log(req.body);
   const token = req.headers.authorization?.split(' ')[1];
   const payload = verifyToken(token);
   if (!payload) {
@@ -52,6 +51,5 @@ export function authenticate(
     return;
   }
   req.body.userId = payload.userId;
-  console.log(req.body);
   next();
 }
